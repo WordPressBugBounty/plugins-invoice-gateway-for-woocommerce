@@ -1,0 +1,6 @@
+#igfw-invoice-gateway-meta-box .form-field.igfw_invoice_number_field {
+    margin: 0;
+}
+#igfw-invoice-gateway-meta-box .form-field.igfw_invoice_number_field label {
+    font-weight: 600;
+}
