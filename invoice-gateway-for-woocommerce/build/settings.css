@@ -1,0 +1,118 @@
+/*!***********************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[4].use[1]!./node_modules/postcss-loader/dist/cjs.js??ruleSet[1].rules[4].use[2]!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[4].use[3]!./src/scss/settings.scss ***!
+  \***********************************************************************************************************************************************************************************************************************************************/
+/* Plugin installer */
+#igfw-plugin-installer {
+  border-radius: 3px;
+  border-left-width: 5px;
+  background: #ffffff;
+  border: 1px solid #d5d5d5;
+  border-left: 5px solid #72aee6;
+  font-family: Lato;
+  padding: 16px;
+}
+#igfw-plugin-installer h2 {
+  font-family: Lato;
+  font-weight: 400;
+  line-height: 100%;
+  letter-spacing: 0%;
+  vertical-align: middle;
+  margin-bottom: 10px;
+}
+
+#igfw-plugin-upsells {
+  display: flex;
+  flex-direction: row;
+  justify-content: start;
+  gap: 10px;
+}
+
+.igfw-plugin-upsell {
+  display: flex;
+  flex-direction: row;
+  gap: 16px;
+  width: 500px;
+}
+.igfw-plugin-upsell .upsell-title {
+  font-weight: 700;
+  line-height: 100%;
+  letter-spacing: 0%;
+  vertical-align: middle;
+}
+.igfw-plugin-upsell .upsell-content {
+  margin-bottom: 24px;
+}
+.igfw-plugin-upsell img {
+  width: 150px;
+  height: 150px;
+}
+.igfw-plugin-upsell .upsell-button {
+  border-radius: 3px;
+  border-width: 1px;
+  background: #f5f5f5;
+  border: 1px solid #e5e5e5;
+  color: #444444;
+  text-align: center;
+  padding: 10px;
+  text-decoration: none;
+}
+.igfw-plugin-upsell .hidden {
+  display: none;
+  visibility: hidden;
+}
+
+.image-link {
+  outline: none;
+  display: inline-block;
+  border: 0;
+  text-decoration: none;
+}
+.image-link#wholesale-suite {
+  margin-top: 10px;
+  padding: 10px;
+}
+.image-link#wholesale-suite img {
+  width: 120px;
+  height: 120px;
+}
+
+/* SweetAlert2 toast customizations */
+.igfw-swal-popup {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 10px 15px;
+  max-width: 320px;
+}
+
+.igfw-swal-icon {
+  margin: 0 10px 0 0;
+  order: 1;
+}
+
+.igfw-swal-title {
+  margin: 0;
+  padding: 0;
+  font-size: 16px;
+  order: 2;
+  text-align: left;
+  flex-grow: 1;
+}
+
+/* Animation for the toast */
+@keyframes igfw-toast-in {
+  from {
+    transform: translateY(-10px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+.igfw-swal-container {
+  animation: igfw-toast-in 0.3s;
+  margin: 40px 20px;
+}
+
+/*# sourceMappingURL=settings.css.map*/

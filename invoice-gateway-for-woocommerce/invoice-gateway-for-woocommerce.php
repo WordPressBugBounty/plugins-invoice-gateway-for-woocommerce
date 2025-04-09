@@ -3,7 +3,7 @@
  * Plugin Name: Invoice Gateway For WooCommerce
  * Plugin URI: https://rymera.com.au/
  * Description: Provides an invoice gateway for WooCommerce so your customers can check out without immediate payment.
- * Version: 1.1.4
+ * Version: 1.1.4.1
  * Author: Rymera Web Co
  * Author URI: https://rymera.com.au/
  * Requires at least: 5.0
@@ -20,7 +20,7 @@
  */
 
 // Exit if accessed directly.
-if ( ! defined( 'ABSPATH' ) ) {
+if (! defined('ABSPATH') ) {
     exit;
 }
 
@@ -29,7 +29,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  *
  * @since 1.1.3
  */
-define( 'IGFW_PLUGIN_FILE', plugin_basename( __FILE__ ) );
+define('IGFW_PLUGIN_FILE', plugin_basename(__FILE__));
 
 /**
  * Register plugin autoloader.
@@ -41,18 +41,18 @@ define( 'IGFW_PLUGIN_FILE', plugin_basename( __FILE__ ) );
 spl_autoload_register(
     function ( $class_name ) {
         // Only do autoload for our plugin files.
-        if ( strpos( $class_name, 'IGFW\\' ) === 0 ) {
-            $class_file = str_replace( array( '\\', 'IGFW' . DIRECTORY_SEPARATOR ), array( DIRECTORY_SEPARATOR, '' ), $class_name ) . '.php';
-            $file_path  = plugin_dir_path( __FILE__ ) . $class_file;
+        if (strpos($class_name, 'IGFW\\') === 0 ) {
+            $class_file = str_replace(array( '\\', 'IGFW' . DIRECTORY_SEPARATOR ), array( DIRECTORY_SEPARATOR, '' ), $class_name) . '.php';
+            $file_path  = plugin_dir_path(__FILE__) . $class_file;
 
-            if ( file_exists( $file_path ) ) {
+            if (file_exists($file_path) ) {
                 include_once $file_path;
             }
         }
     }
 );
 
-require_once plugin_dir_path( __FILE__ ) . 'class-igfw.php';
+require_once plugin_dir_path(__FILE__) . 'class-igfw.php';
 
 /**
  * Returns the main instance of IGFW to prevent the need to use globals.
@@ -60,7 +60,8 @@ require_once plugin_dir_path( __FILE__ ) . 'class-igfw.php';
  * @since  1.0.0
  * @return IGFW\IGFW Main instance of the plugin.
  */
-function igfw() {
+function igfw()
+{
     return IGFW\IGFW::get_instance();
 }
 

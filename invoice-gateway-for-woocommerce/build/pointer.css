@@ -1,0 +1,100 @@
+/*!**********************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[4].use[1]!./node_modules/postcss-loader/dist/cjs.js??ruleSet[1].rules[4].use[2]!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[4].use[3]!./src/scss/pointer.scss ***!
+  \**********************************************************************************************************************************************************************************************************************************************/
+/* IGFW Pointer */
+#igfw_toolbar-container {
+  display: flex;
+  align-items: center;
+}
+
+.igfw-bar-tooltip .wp-pointer-content {
+  padding: 0 0 12px;
+}
+.igfw-bar-tooltip .wp-pointer-content h3 {
+  font-size: 13px;
+  line-height: 20px;
+  font-weight: 500;
+  margin: 0;
+  padding: 8px 12px 8px 42px;
+  box-sizing: border-box;
+  height: 36px;
+}
+.igfw-bar-tooltip .wp-pointer-content h3:before {
+  height: 20px;
+  width: 20px;
+  font-size: 14px;
+}
+.igfw-bar-tooltip .wp-pointer-content p {
+  padding: 12px 12px 0;
+  margin: 0;
+}
+.igfw-bar-tooltip .wp-pointer-content ul {
+  padding-left: 32px;
+  margin: 6px 0 0;
+  padding-right: 12px;
+}
+.igfw-bar-tooltip .wp-pointer-content p,
+.igfw-bar-tooltip .wp-pointer-content li {
+  font-size: 12px;
+  line-height: 20px;
+}
+.igfw-bar-tooltip .wp-pointer-content li {
+  list-style: disc;
+  margin-bottom: 0;
+}
+.igfw-bar-tooltip .wp-pointer-arrow {
+  left: 50%;
+  transform: translateX(-50%);
+  top: 0;
+}
+.igfw-bar-tooltip .wp-pointer-buttons {
+  position: absolute;
+  bottom: 12px;
+  right: 12px;
+  height: 30px;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  padding: 5px 0 5px 15px;
+}
+.igfw-bar-tooltip .wp-pointer-buttons .close {
+  font-size: 12px;
+  line-height: 18px;
+  padding-left: 4px;
+  color: #787c82;
+}
+.igfw-bar-tooltip .wp-pointer-buttons .close:before {
+  line-height: 16px;
+  width: 16px;
+}
+.igfw-bar-tooltip .wp-pointer-buttons .close:hover:before {
+  color: #787c82;
+}
+.igfw-bar-tooltip .button {
+  margin: 16px 12px 0;
+  padding: 0 12px;
+  border-radius: 4px;
+}
+.igfw-bar-tooltip.wp-pointer-top {
+  padding-top: 12px;
+}
+
+/* RTL Support */
+body.rtl .igfw-bar-tooltip .wp-pointer-content h3 {
+  padding: 8px 42px 8px 12px;
+}
+body.rtl .igfw-bar-tooltip .wp-pointer-content h3:before {
+  height: 20px;
+  width: 20px;
+  font-size: 14px;
+}
+body.rtl .igfw-bar-tooltip .wp-pointer-content ul {
+  padding-right: 32px;
+  padding-left: 12px;
+}
+body.rtl .igfw-bar-tooltip .wp-pointer-buttons {
+  right: auto;
+  left: 12px;
+}
+
+/*# sourceMappingURL=pointer.css.map*/
