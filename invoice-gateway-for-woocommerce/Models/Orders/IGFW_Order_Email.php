@@ -1,4 +1,13 @@
 <?php
+/**
+ * IGFW Order Email class file.
+ *
+ * @package Invoice_Gateway_For_WooCommerce
+ * @subpackage Models/Orders
+ * @since 1.0.0
+ * @since 1.1.4 - Applied PHPCS Rules. Compatibility for PHP 8.2+
+ */
+
 namespace IGFW\Models\Orders;
 
 use IGFW\Abstracts\Abstract_Main_Plugin_Class;
@@ -6,10 +15,9 @@ use IGFW\Helpers\Helper_Functions;
 use IGFW\Helpers\Plugin_Constants;
 use IGFW\Interfaces\Model_Interface;
 
-if (!defined('ABSPATH')) {
-    exit;
+if ( ! defined( 'ABSPATH' ) ) {
+    exit; // Exit if accessed directly.
 }
-// Exit if accessed directly
 
 /**
  * Model that houses the logic of order emails.
@@ -32,7 +40,7 @@ class IGFW_Order_Email implements Model_Interface {
      * @access private
      * @var Bootstrap
      */
-    private static $_instance;
+    private static $instance;
 
     /**
      * Model that houses all the plugin constants.
@@ -41,7 +49,7 @@ class IGFW_Order_Email implements Model_Interface {
      * @access private
      * @var Plugin_Constants
      */
-    private $_constants;
+    private $constants;
 
     /**
      * Property that houses all the helper functions of the plugin.
@@ -50,7 +58,7 @@ class IGFW_Order_Email implements Model_Interface {
      * @access private
      * @var Helper_Functions
      */
-    private $_helper_functions;
+    private $helper_functions;
 
     /*
     |--------------------------------------------------------------------------
@@ -68,14 +76,13 @@ class IGFW_Order_Email implements Model_Interface {
      * @param Plugin_Constants           $constants        Plugin constants object.
      * @param Helper_Functions           $helper_functions Helper functions object.
      */
-    public function __construct(Abstract_Main_Plugin_Class $main_plugin, Plugin_Constants $constants, Helper_Functions $helper_functions) {
+    public function __construct( Abstract_Main_Plugin_Class $main_plugin, Plugin_Constants $constants, Helper_Functions $helper_functions ) {
 
-        $this->_constants = $constants;
-        $this->_helper_functions = $helper_functions;
+        $this->constants        = $constants;
+        $this->helper_functions = $helper_functions;
 
-        $main_plugin->add_to_all_plugin_models($this);
-        $main_plugin->add_to_public_models($this);
-
+        $main_plugin->add_to_all_plugin_models( $this );
+        $main_plugin->add_to_public_models( $this );
     }
 
     /**
@@ -89,14 +96,13 @@ class IGFW_Order_Email implements Model_Interface {
      * @param Helper_Functions           $helper_functions Helper functions object.
      * @return Bootstrap
      */
-    public static function get_instance(Abstract_Main_Plugin_Class $main_plugin, Plugin_Constants $constants, Helper_Functions $helper_functions) {
+    public static function get_instance( Abstract_Main_Plugin_Class $main_plugin, Plugin_Constants $constants, Helper_Functions $helper_functions ) {
 
-        if (!self::$_instance instanceof self) {
-            self::$_instance = new self($main_plugin, $constants, $helper_functions);
+        if ( ! self::$instance instanceof self ) {
+            self::$instance = new self( $main_plugin, $constants, $helper_functions );
         }
 
-        return self::$_instance;
-
+        return self::$instance;
     }
 
     /**
@@ -111,45 +117,39 @@ class IGFW_Order_Email implements Model_Interface {
      * @param Boolean  $plain_text    Flag that determines if plain text email.
      * @param WC_Email $email         Email object.
      */
-    public function add_invoice_note_to_admin_new_order_email($order, $sent_to_admin, $plain_text, $email) {
+    public function add_invoice_note_to_admin_new_order_email( $order, $sent_to_admin, $plain_text, $email ) {
 
-        if ($email instanceof \WC_Email_New_Order && $order instanceof \WC_Order) {
+        if ( $email instanceof \WC_Email_New_Order && $order instanceof \WC_Order ) {
 
             if ( $order->get_payment_method() === 'igfw_invoice_gateway' ) {
 
-                $invoice_number = $order->get_meta( Plugin_Constants::Invoice_Number, true );
+                $invoice_number = $order->get_meta( Plugin_Constants::INVOICE_NUMBER, true );
 
-                if ($invoice_number) {
-                    if ($plain_text) {
-                        echo sprintf("\nInvoice Number: %s\n", esc_html($invoice_number));
+                if ( '' !== $invoice_number ) {
+                    if ( $plain_text ) {
+                        printf( "\nInvoice Number: %s\n", esc_html( $invoice_number ) );
                     } else {
-                        echo '<span style="color: red; font-weight: 600;"><p>' . sprintf("\nInvoice Number: %s\n", esc_html($invoice_number)) . '</p></span>';
+                        echo '<span style="color: red; font-weight: 600;"><p>' . sprintf( "\nInvoice Number: %s\n", esc_html( $invoice_number ) ) . '</p></span>';
                     }
-
+                } elseif ( $plain_text ) {
+                    // Translators: %1$s is the invoice number.
+                    echo esc_html( sprintf( __( 'NOTE: This order requires an invoice. %1$s', 'invoice-gateway-for-woocommerce' ), $invoice_number ) );
                 } else {
-                    if ($plain_text) {
-                        echo "\nNOTE: This order requires an invoice.\n";
-                    } else {
-                        echo '<span style="color: red; font-weight: 600;"><p>' . __('NOTE: This order requires an invoice.', 'invoice-gateway-for-woocommerce') . '</p></span>';
-                    }
-
+                    // Translators: %1$s is the invoice number.
+                    echo esc_html( sprintf( __( 'NOTE: This order requires an invoice. %1$s', 'invoice-gateway-for-woocommerce' ), $invoice_number ) );
                 }
 
-                $po_number = $order->get_meta( Plugin_Constants::Purchase_Order_Number, true );
+                $po_number = $order->get_meta( Plugin_Constants::PURCHASE_ORDER_NUMBER, true );
 
-                if ($po_number && get_option('igfw_enable_purchase_order_number') == 'yes') {
-                    if ($plain_text) {
-                        echo sprintf("\nPurchase Order Number: %s\n", esc_html($po_number));
+                if ( '' !== $po_number && 'yes' === get_option( 'igfw_enable_purchase_order_number' ) ) {
+                    if ( $plain_text ) {
+                        printf( "\nPurchase Order Number: %s\n", esc_html( $po_number ) );
                     } else {
-                        echo '<p>' . sprintf("\nPurchase Order Number: %s\n", esc_html($po_number)) . '</p>';
+                        echo '<p>' . sprintf( "\nPurchase Order Number: %s\n", esc_html( $po_number ) ) . '</p>';
                     }
-
                 }
-
             }
-
         }
-
     }
 
     /**
@@ -164,40 +164,39 @@ class IGFW_Order_Email implements Model_Interface {
      * @param Boolean  $plain_text    Flag that determines if plain text email.
      * @param WC_Email $email         Email object.
      */
-    public function add_paid_by_invoice_note_on_customer_completed_order_email($order, $sent_to_admin, $plain_text, $email) {
+    public function add_paid_by_invoice_note_on_customer_completed_order_email( $order, $sent_to_admin, $plain_text, $email ) {
 
-        if ($email instanceof \WC_Email_Customer_Completed_Order && $order instanceof \WC_Order) {
+        if ( $email instanceof \WC_Email_Customer_Completed_Order && $order instanceof \WC_Order ) {
 
             if ( $order->get_payment_method() === 'igfw_invoice_gateway' ) {
 
-                $invoice_number = $order->get_meta( Plugin_Constants::Invoice_Number, true );
+                $invoice_number = $order->get_meta( Plugin_Constants::INVOICE_NUMBER, true );
 
-                if ($invoice_number != "") {
+                if ( '' !== $invoice_number ) {
 
-                    if ($plain_text) {
-                        echo "\n" . __('Paid via invoice number: ', 'invoice-gateway-for-woocommerce') . esc_html($invoice_number) . "\n";
+                    if ( $plain_text ) {
+                        // Translators: %1$s is the invoice number.
+                        echo esc_html( sprintf( __( 'Paid via invoice number: %s', 'invoice-gateway-for-woocommerce' ), $invoice_number ) );
                     } else {
-                        echo sprintf(__('<br><p>Paid via invoice number: <b>%1$s</b></p>', 'invoice-gateway-for-woocommerce'), esc_html($invoice_number));
+                        // Translators: %1$s is the invoice number.
+                        echo esc_html( sprintf( __( '<br><p>Paid via invoice number: <b>%1$s</b></p>', 'invoice-gateway-for-woocommerce' ), $invoice_number ) );
                     }
-
                 }
 
-                $po_number = $order->get_meta( Plugin_Constants::Purchase_Order_Number, true );
+                $po_number = $order->get_meta( Plugin_Constants::PURCHASE_ORDER_NUMBER, true );
 
-                if ($po_number != "" && get_option('igfw_enable_purchase_order_number') == 'yes') {
+                if ( '' !== $po_number && 'yes' === get_option( 'igfw_enable_purchase_order_number' ) ) {
 
-                    if ($plain_text) {
-                        echo __('Purchase order number: ', 'invoice-gateway-for-woocommerce') . esc_html($po_number);
+                    if ( $plain_text ) {
+                        // Translators: %1$s is the purchase order number.
+                        echo esc_html( sprintf( __( 'Purchase order number: %s', 'invoice-gateway-for-woocommerce' ), $po_number ) );
                     } else {
-                        echo sprintf(__('<p>Purchase order number: <b>%1$s</b></p>', 'invoice-gateway-for-woocommerce'), esc_html($po_number));
+                        // Translators: %1$s is the purchase order number.
+                        echo esc_html( sprintf( __( '<p>Purchase order number: <b>%1$s</b></p>', 'invoice-gateway-for-woocommerce' ), $po_number ) );
                     }
-
                 }
-
             }
-
         }
-
     }
 
     /**
@@ -210,9 +209,7 @@ class IGFW_Order_Email implements Model_Interface {
      */
     public function run() {
 
-        add_action('woocommerce_email_order_details', array($this, 'add_invoice_note_to_admin_new_order_email'), 9, 4);
-        add_filter('woocommerce_email_order_details', array($this, 'add_paid_by_invoice_note_on_customer_completed_order_email'), 9, 4);
-
+        add_action( 'woocommerce_email_order_details', array( $this, 'add_invoice_note_to_admin_new_order_email' ), 9, 4 );
+        add_filter( 'woocommerce_email_order_details', array( $this, 'add_paid_by_invoice_note_on_customer_completed_order_email' ), 9, 4 );
     }
-
 }

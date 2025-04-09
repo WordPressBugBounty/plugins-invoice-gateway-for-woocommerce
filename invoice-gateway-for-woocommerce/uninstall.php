@@ -1,24 +1,32 @@
-<?php 
-require_once ( 'Helpers/Plugin_Constants.php' );
+<?php
+/**
+ * Uninstall
+ *
+ * @package Invoice Gateway for WooCommerce
+ */
+
+require_once 'Helpers/Plugin_Constants.php';
 
 use IGFW\Helpers\Plugin_Constants;
 
-if ( !defined( 'WP_UNINSTALL_PLUGIN' ) ) exit();
+if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {
+    exit();
+}
 
 /**
  * Function that houses the code that cleans up the plugin on un-installation.
  *
  * @since 1.0.0
+ * @since 1.1.0 Added igfw_activation_date option.
  */
 function igfw_plugin_cleanup() {
 
-    if ( get_option( Plugin_Constants::CLEAN_UP_PLUGIN_OPTIONS , false ) == 'yes' ) {
+    if ( get_option( Plugin_Constants::CLEAN_UP_PLUGIN_OPTIONS, false ) == 'yes' ) {
 
-        // Help settings section options
+        // Help settings section options.
         delete_option( Plugin_Constants::CLEAN_UP_PLUGIN_OPTIONS );
-
+        delete_option( 'igfw_activation_date' );
     }
-
 }
 
 if ( function_exists( 'is_multisite' ) && is_multisite() ) {
@@ -27,16 +35,16 @@ if ( function_exists( 'is_multisite' ) && is_multisite() ) {
 
     $blog_ids = $wpdb->get_col( "SELECT blog_id FROM $wpdb->blogs" );
 
-    foreach ( $blog_ids as $blog_id ) {
+    foreach ( $blog_ids as $the_blog_id ) {
 
-        switch_to_blog( $blog_id );
+        switch_to_blog( $the_blog_id );
         igfw_plugin_cleanup();
-
     }
 
     restore_current_blog();
 
     return;
 
-} else
+} else {
     igfw_plugin_cleanup();
+}

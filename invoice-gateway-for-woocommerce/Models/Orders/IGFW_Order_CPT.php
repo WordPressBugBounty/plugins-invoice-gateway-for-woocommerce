@@ -1,4 +1,13 @@
 <?php
+/**
+ * IGFW Order CPT class file.
+ *
+ * @package Invoice_Gateway_For_WooCommerce
+ * @subpackage Models/Orders
+ * @since 1.0.0
+ * @since 1.1.4 - Applied PHPCS Rules. Compatibility for PHP 8.2+
+ */
+
 namespace IGFW\Models\Orders;
 
 use IGFW\Abstracts\Abstract_Main_Plugin_Class;
@@ -35,7 +44,7 @@ class IGFW_Order_CPT implements Model_Interface {
      * @access private
      * @var Bootstrap
      */
-    private static $_instance;
+    private static $instance;
 
     /**
      * Model that houses all the plugin constants.
@@ -44,7 +53,7 @@ class IGFW_Order_CPT implements Model_Interface {
      * @access private
      * @var Plugin_Constants
      */
-    private $_constants;
+    private $constants;
 
     /**
      * Property that houses all the helper functions of the plugin.
@@ -53,7 +62,7 @@ class IGFW_Order_CPT implements Model_Interface {
      * @access private
      * @var Helper_Functions
      */
-    private $_helper_functions;
+    private $helper_functions;
 
     /*
     |--------------------------------------------------------------------------
@@ -73,8 +82,8 @@ class IGFW_Order_CPT implements Model_Interface {
      */
     public function __construct( Abstract_Main_Plugin_Class $main_plugin, Plugin_Constants $constants, Helper_Functions $helper_functions ) {
 
-        $this->_constants        = $constants;
-        $this->_helper_functions = $helper_functions;
+        $this->constants        = $constants;
+        $this->helper_functions = $helper_functions;
 
         $main_plugin->add_to_all_plugin_models( $this );
     }
@@ -92,11 +101,11 @@ class IGFW_Order_CPT implements Model_Interface {
      */
     public static function get_instance( Abstract_Main_Plugin_Class $main_plugin, Plugin_Constants $constants, Helper_Functions $helper_functions ) {
 
-        if ( ! self::$_instance instanceof self ) {
-            self::$_instance = new self( $main_plugin, $constants, $helper_functions );
+        if ( ! self::$instance instanceof self ) {
+            self::$instance = new self( $main_plugin, $constants, $helper_functions );
         }
 
-        return self::$_instance;
+        return self::$instance;
     }
 
     /**
@@ -128,8 +137,7 @@ class IGFW_Order_CPT implements Model_Interface {
      * @access public
      */
     public function view_order_invoice_meta_box() {
-
-        include $this->_constants->VIEWS_ROOT_PATH() . 'order' . DIRECTORY_SEPARATOR . 'view-order-invoice-meta-box.php';
+        include $this->constants->views_root_path() . 'order' . DIRECTORY_SEPARATOR . 'view-order-invoice-meta-box.php';
     }
 
     /**
@@ -146,11 +154,11 @@ class IGFW_Order_CPT implements Model_Interface {
 
             woocommerce_wp_text_input(
                 array(
-					'id'        => Plugin_Constants::Purchase_Order_Number,
-					'style'     => 'width: 100%;',
-					'label'     => __( 'Purchase Order Number', 'invoice-gateway-for-woocommerce' ),
-					'type'      => 'text',
-					'data_type' => 'text',
+                    'id'        => Plugin_Constants::PURCHASE_ORDER_NUMBER,
+                    'style'     => 'width: 100%;',
+                    'label'     => __( 'Purchase Order Number', 'invoice-gateway-for-woocommerce' ),
+                    'type'      => 'text',
+                    'data_type' => 'text',
                 ),
                 $theorder
             );
@@ -159,12 +167,12 @@ class IGFW_Order_CPT implements Model_Interface {
 
         woocommerce_wp_text_input(
             array(
-				'id'          => Plugin_Constants::Invoice_Number,
-				'style'       => 'width: 100%;',
-				'label'       => __( 'Invoice Number', 'invoice-gateway-for-woocommerce' ),
-				'description' => __( '<br>Enter the Invoice ID from your accounting system for tracking purposes', 'invoice-gateway-for-woocommerce' ),
-				'type'        => 'text',
-				'data_type'   => 'text',
+                'id'          => Plugin_Constants::INVOICE_NUMBER,
+                'style'       => 'width: 100%;',
+                'label'       => __( 'Invoice Number', 'invoice-gateway-for-woocommerce' ),
+                'description' => __( '<br>Enter the Invoice ID from your accounting system for tracking purposes', 'invoice-gateway-for-woocommerce' ),
+                'type'        => 'text',
+                'data_type'   => 'text',
             ),
             $theorder
         );
@@ -191,37 +199,37 @@ class IGFW_Order_CPT implements Model_Interface {
                 $order = wc_get_order( $order_id );
             }
 
-            $new_invoice_number      = isset( $_POST[ Plugin_Constants::Invoice_Number ] ) ?
+            $new_invoice_number      = isset( $_POST[ Plugin_Constants::INVOICE_NUMBER ] ) ?
                 filter_var(
                     trim(
                         sanitize_text_field(
-                            $_POST[ Plugin_Constants::Invoice_Number ]
+                            $_POST[ Plugin_Constants::INVOICE_NUMBER ]
                         )
                     ),
                     FILTER_SANITIZE_STRING
                 ) :
                 '';
-            $existing_invoice_number = $order->get_meta( Plugin_Constants::Invoice_Number, true );
+            $existing_invoice_number = $order->get_meta( Plugin_Constants::INVOICE_NUMBER, true );
 
-            $this->_log_invoice_number_activity( $new_invoice_number, $existing_invoice_number, $order_id );
+            $this->log_invoice_number_activity( 'invoice number', $new_invoice_number, $existing_invoice_number, $order );
 
-            $order->update_meta_data( Plugin_Constants::Invoice_Number, $new_invoice_number );
+            $order->update_meta_data( Plugin_Constants::INVOICE_NUMBER, $new_invoice_number );
 
             if ( isset( $_POST['igfw_purchase_order_number'] ) ) {
 
-                $new_invoice_number      = isset( $_POST[ Plugin_Constants::Purchase_Order_Number ] ) ?
+                $new_invoice_number      = isset( $_POST[ Plugin_Constants::PURCHASE_ORDER_NUMBER ] ) ?
                     filter_var(
                         trim(
-                            sanitize_text_field( $_POST[ Plugin_Constants::Purchase_Order_Number ] )
+                            sanitize_text_field( $_POST[ Plugin_Constants::PURCHASE_ORDER_NUMBER ] )
                         ),
                         FILTER_SANITIZE_STRING
                     ) :
                     '';
-                $existing_invoice_number = $order->get_meta( Plugin_Constants::Purchase_Order_Number, true );
+                $existing_invoice_number = $order->get_meta( Plugin_Constants::PURCHASE_ORDER_NUMBER, true );
 
-                $this->_log_invoice_number_activity( $new_invoice_number, $existing_invoice_number, $order_id, 'purchase order number' );
+                $this->log_invoice_number_activity( 'purchase order number', $new_invoice_number, $existing_invoice_number, $order );
 
-                $order->update_meta_data( Plugin_Constants::Purchase_Order_Number, $new_invoice_number );
+                $order->update_meta_data( Plugin_Constants::PURCHASE_ORDER_NUMBER, $new_invoice_number );
 
             }
         }
@@ -231,28 +239,26 @@ class IGFW_Order_CPT implements Model_Interface {
      * Log invoice number activity.
      *
      * @since 1.0.0
-     * @access public
      *
-     * @param string $new_invoice_number      New invoice number.
-     * @param string $existing_invoice_number Current invoice number.
-     * @param int    $post_id                 Post (Order) id.
+     * @param string   $type                  Type of invoice number.
+     * @param string   $new_invoice_number    New invoice number.
+     * @param string   $existing_invoice_number Existing invoice number.
+     * @param WC_Order $order               Order object.
      */
-    private function _log_invoice_number_activity( $new_invoice_number, $existing_invoice_number, $post_id, $type = 'invoice number' ) {
+    public function log_invoice_number_activity( $type, $new_invoice_number, $existing_invoice_number, $order ) {
 
-        if ( $new_invoice_number == $existing_invoice_number ) {
-            return;
-        }
-
-        $order = wc_get_order( $post_id );
-        $user  = wp_get_current_user();
+        $user = wp_get_current_user();
 
         if ( is_a( $order, 'WC_Order' ) ) {
 
-            if ( $new_invoice_number != '' && $existing_invoice_number == '' ) {
+            if ( '' !== $new_invoice_number && '' === $existing_invoice_number ) {
+                // Translators: %1$s is the user display name, %2$s is the type of invoice number, %3$s is the new invoice number.
                 $order->add_order_note( sprintf( __( '%1$s added %2$s %3$s.', 'invoice-gateway-for-woocommerce' ), $user->display_name, $type, $new_invoice_number ) );
-            } elseif ( $new_invoice_number == '' && $existing_invoice_number != '' ) {
+            } elseif ( '' === $new_invoice_number && '' !== $existing_invoice_number ) {
+                // Translators: %1$s is the user display name, %2$s is the type of invoice number, %3$s is the existing invoice number.
                 $order->add_order_note( sprintf( __( '%1$s removed %2$s %3$s.', 'invoice-gateway-for-woocommerce' ), $user->display_name, $type, $existing_invoice_number ) );
-            } elseif ( $new_invoice_number != $existing_invoice_number ) {
+            } elseif ( $new_invoice_number !== $existing_invoice_number ) {
+                // Translators: %1$s is the user display name, %2$s is the type of invoice number, %3$s is the existing invoice number, %4$s is the new invoice number.
                 $order->add_order_note( sprintf( __( '%1$s updated %2$s from %3$s to %4$s.', 'invoice-gateway-for-woocommerce' ), $user->display_name, $type, $existing_invoice_number, $new_invoice_number ) );
             }
         }
@@ -270,9 +276,9 @@ class IGFW_Order_CPT implements Model_Interface {
         // phpcs:disable WordPress.Security.NonceVerification
         if ( get_option( 'igfw_enable_purchase_order_number' ) === 'yes' &&
             ( isset( $data['payment_method'] ) && 'igfw_invoice_gateway' === $data['payment_method'] ) &&
-            ( isset( $_REQUEST[ Plugin_Constants::Purchase_Order_Number ] ) && ! empty( $_REQUEST[ Plugin_Constants::Purchase_Order_Number ] ) )
+            ( isset( $_REQUEST[ Plugin_Constants::PURCHASE_ORDER_NUMBER ] ) && ! empty( $_REQUEST[ Plugin_Constants::PURCHASE_ORDER_NUMBER ] ) )
         ) {
-            $data[ Plugin_Constants::Purchase_Order_Number ] = sanitize_text_field( $_REQUEST[ Plugin_Constants::Purchase_Order_Number ] );
+            $data[ Plugin_Constants::PURCHASE_ORDER_NUMBER ] = sanitize_text_field( $_REQUEST[ Plugin_Constants::PURCHASE_ORDER_NUMBER ] );
         }
         // phpcs:enable WordPress.Security.NonceVerification
         return $data;
@@ -288,8 +294,8 @@ class IGFW_Order_CPT implements Model_Interface {
      * @param array    $data  Posted data.
      */
     public function maybe_save_purchase_number_number_on_checkout( $order, $data ) {
-        if ( isset( $data[ Plugin_Constants::Purchase_Order_Number ] ) && ! empty( $data[ Plugin_Constants::Purchase_Order_Number ] ) ) {
-            $order->update_meta_data( Plugin_Constants::Purchase_Order_Number, $data[ Plugin_Constants::Purchase_Order_Number ] );
+        if ( isset( $data[ Plugin_Constants::PURCHASE_ORDER_NUMBER ] ) && ! empty( $data[ Plugin_Constants::PURCHASE_ORDER_NUMBER ] ) ) {
+            $order->update_meta_data( Plugin_Constants::PURCHASE_ORDER_NUMBER, $data[ Plugin_Constants::PURCHASE_ORDER_NUMBER ] );
         }
     }
 
@@ -297,24 +303,27 @@ class IGFW_Order_CPT implements Model_Interface {
      * Show invoice payment gateway on free orders.
      *
      * @since 1.1.3
+     * @since 1.1.4 - Avoid removing other payment gateways if the cart total is zero.
      * @access public
      *
-     * @param bool    $needs_payment Returns bolean value if the order needs payment.
+     * @param bool    $needs_payment Returns boolean value if the order needs payment.
      * @param WC_Cart $cart          WC Cart object.
      */
     public function show_invoice_payment_gateway_on_free_orders( $needs_payment, $cart ) {
 
         $enabled_payment_gateways = WC()->payment_gateways->get_available_payment_gateways();
 
-        if ( ( isset( $enabled_payment_gateways['igfw_invoice_gateway'] ) &&
-            $cart->get_total( 'edit' ) == 0 ) && // phpcs:ignore Universal.Operators.StrictComparisons.LooseEqual 
+        $cart_total = wc_format_decimal( $cart->get_total( 'edit' ), wc_get_price_decimals() );
+        $zero_price = wc_format_decimal( 0, wc_get_price_decimals() );
+
+        if ( ( isset( $enabled_payment_gateways['igfw_invoice_gateway'] ) && $cart_total === $zero_price ) &&
             apply_filters( 'igfw_show_invoice_gateway_on_free_orders', true )
         ) {
-            WC()->payment_gateways->payment_gateways                         = array();
             WC()->payment_gateways->payment_gateways['igfw_invoice_gateway'] = $enabled_payment_gateways['igfw_invoice_gateway'];
 
             $needs_payment = true;
         }
+
         return $needs_payment;
     }
 
@@ -340,4 +349,20 @@ class IGFW_Order_CPT implements Model_Interface {
         add_filter( 'woocommerce_cart_needs_payment', array( $this, 'show_invoice_payment_gateway_on_free_orders' ), 10, 2 );
     }
 
+    /**
+     * Method to initialize a newly created site in a multi site set up.
+     *
+     * @since 1.0.0
+     * @access public
+     *
+     * @param int    $blog_id  Blog ID of the created blog.
+     * @param int    $user_id  User ID of the user creating the blog.
+     * @param string $domain   Domain used for the new blog.
+     * @param string $path     Path to the new blog.
+     * @param int    $site_id  Site ID.
+     * @param array  $meta     Meta data.
+     */
+    public function new_mu_site_init( $blog_id, $user_id, $domain, $path, $site_id, $meta ) {
+        // ...
+    }
 }

@@ -1,12 +1,23 @@
 <?php
+/**
+ * Helper functions for the plugin.
+ *
+ * @package Invoice_Gateway_For_WooCommerce
+ * @subpackage Helpers
+ * @since 1.0.0
+ * @since 1.1.4 - Applied PHPCS Rules. Compatibility for PHP 8.2+
+ */
+
 namespace IGFW\Helpers;
 
-if ( !defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
+if ( ! defined( 'ABSPATH' ) ) {
+    exit; // Exit if accessed directly.
+}
 
 /**
  * Model that houses all the helper functions of the plugin.
  *
- * 1.0.0
+ * @since 1.0.0
  */
 class Helper_Functions {
 
@@ -23,7 +34,7 @@ class Helper_Functions {
      * @access private
      * @var Helper_Functions
      */
-    private static $_instance;
+    private static $instance;
 
     /**
      * Model that houses all the plugin constants.
@@ -32,10 +43,7 @@ class Helper_Functions {
      * @access private
      * @var Plugin_Constants
      */
-    private $_constants;
-    
-
-
+    private $constants;
 
     /*
     |--------------------------------------------------------------------------
@@ -53,30 +61,26 @@ class Helper_Functions {
      */
     public function __construct( Plugin_Constants $constants ) {
 
-        $this->_constants = $constants;
-
+        $this->constants = $constants;
     }
 
     /**
      * Ensure that only one instance of this class is loaded or can be loaded ( Singleton Pattern ).
-     * 
+     *
      * @since 1.0.0
      * @access public
-     * 
+     *
      * @param Plugin_Constants $constants Plugin constants object.
      * @return Helper_Functions
      */
     public static function get_instance( Plugin_Constants $constants ) {
 
-        if ( !self::$_instance instanceof self )
-            self::$_instance = new self( $constants );
-        
-        return self::$_instance;
+        if ( ! self::$instance instanceof self ) {
+            self::$instance = new self( $constants );
+        }
 
+        return self::$instance;
     }
-    
-
-
 
     /*
     |--------------------------------------------------------------------------
@@ -90,17 +94,15 @@ class Helper_Functions {
      * @since 1.0.0
      * @access public
      *
-     * @param mixed Data to log.
+     * @param mixed $log Data to log.
      */
-    public function write_debug_log( $log )  {
-
-        error_log( "\n[" . current_time( 'mysql' ) . "]\n" . $log . "\n--------------------------------------------------\n" , 3 , $this->_constants->LOGS_ROOT_PATH() . 'debug.log' );
-
+    public function write_debug_log( $log ) {
+        error_log( "\n[" . current_time( 'mysql' ) . "]\n" . $log . "\n--------------------------------------------------\n", 3, $this->constants->logs_root_path() . 'debug.log' );
     }
 
     /**
      * Check if current user is authorized to manage the plugin on the backend.
-     * 
+     *
      * @since 1.0.0
      * @access public
      *
@@ -109,44 +111,48 @@ class Helper_Functions {
      */
     public function current_user_authorized( $user = null ) {
 
-        // Array of roles allowed to access/utilize the plugin
-        $admin_roles = apply_filters( 'igfw_admin_roles' , array( 'administrator' ) );
+        // Array of roles allowed to access/utilize the plugin.
+        $admin_roles = apply_filters( 'igfw_admin_roles', array( 'administrator' ) );
 
-        if ( is_null( $user ) )
+        if ( is_null( $user ) ) {
             $user = wp_get_current_user();
+        }
 
-        if ( $user->ID )
-            return count( array_intersect( ( array ) $user->roles , $admin_roles ) ) ? true : false;
-        else
+        if ( $user->ID ) {
+            return count( array_intersect( (array) $user->roles, $admin_roles ) ) ? true : false;
+        } else {
             return false;
-        
+        }
     }
 
     /**
      * Returns the timezone string for a site, even if it's set to a UTC offset
-     * 
+     *
      * Adapted from http://www.php.net/manual/en/function.timezone-name-from-abbr.php#89155
-     * 
+     *
      * Reference:
      * http://www.skyverge.com/blog/down-the-rabbit-hole-wordpress-and-timezones/
-     * 
+     *
      * @since 1.0.0
      * @access public
-     * 
+     *
      * @return string Valid PHP timezone string
      */
     public function get_site_current_timezone() {
 
-        // if site timezone string exists, return it
-        if ( $timezone = get_option( 'timezone_string' ) )
+        // If site timezone string exists, return it.
+        $timezone = get_option( 'timezone_string' );
+        if ( $timezone ) {
             return $timezone;
+        }
 
-        // get UTC offset, if it isn't set then return UTC
-        if ( 0 === ( $utc_offset = get_option( 'gmt_offset', 0 ) ) )
+        // Get UTC offset, if it isn't set then return UTC.
+        $utc_offset = get_option( 'gmt_offset', 0 );
+        if ( 0 === $utc_offset ) {
             return 'UTC';
+        }
 
-        return convert_utc_offset_to_timezone( $utc_offset );
-        
+        return $this->convert_utc_offset_to_timezone( $utc_offset );
     }
 
     /**
@@ -155,29 +161,33 @@ class Helper_Functions {
      * @since 1.0.0
      * @access public
      *
-     * @param float/int/string $utc_offset UTC offset.
+     * @param float|int|string $utc_offset UTC offset.
      * @return string valid PHP timezone string
      */
     public function convert_utc_offset_to_timezone( $utc_offset ) {
 
-        // adjust UTC offset from hours to seconds
+        // Adjust UTC offset from hours to seconds.
         $utc_offset *= 3600;
 
-        // attempt to guess the timezone string from the UTC offset
-        if ( $timezone = timezone_name_from_abbr( '' , $utc_offset , 0 ) )
+        // Attempt to guess the timezone string from the UTC offset.
+        $timezone = timezone_name_from_abbr( '', $utc_offset, 0 );
+        if ( $timezone ) {
             return $timezone;
-        
-        // last try, guess timezone string manually
-        $is_dst = date( 'I' );
+        }
 
-        foreach ( timezone_abbreviations_list() as $abbr )
-            foreach ( $abbr as $city )
-                if ( $city[ 'dst' ] == $is_dst && $city[ 'offset' ] == $utc_offset )
-                    return $city[ 'timezone_id' ];
-        
-        // fallback to UTC
+        // Last try, guess timezone string manually.
+        $is_dst = gmdate( 'I' );
+
+        foreach ( timezone_abbreviations_list() as $abbr ) {
+            foreach ( $abbr as $city ) {
+                if ( $city['dst'] === $is_dst && $city['offset'] === $utc_offset ) {
+                    return $city['timezone_id'];
+                }
+            }
+        }
+
+        // Fallback to UTC.
         return 'UTC';
-
     }
 
     /**
@@ -194,8 +204,46 @@ class Helper_Functions {
 
         global $wp_roles;
         return $wp_roles->get_names();
-
     }
 
+    /**
+     * Check if the plugin is installed.
+     *
+     * @since 1.1.4
+     * @access public
+     *
+     * @param string $plugin_name The plugin name.
+     * @return bool
+     */
+    public function is_plugin_installed( $plugin_name ) {
+        return file_exists( WP_PLUGIN_DIR . '/' . $plugin_name );
+    }
 
+    /**
+     * Get the URL with UTM parameters.
+     *
+     * @param string $url_path     URL path from main.
+     * @param string $utm_source   UTM source.
+     * @param string $utm_medium   UTM medium.
+     * @param string $utm_campaign UTM campaign.
+     * @param string $site_url     URL - defaults to `https://wholesalesuiteplugin.com/`.
+     *
+     * @since 1.1.4
+     * @return string
+     */
+    public static function get_utm_url( $url_path = '', $utm_source = 'igfw', $utm_medium = 'action', $utm_campaign = 'default', $site_url = 'https://wholesalesuiteplugin.com/' ) {
+
+        $utm_content = get_option( 'igfw_installed_by', false );
+        $url         = trailingslashit( $site_url ) . $url_path;
+
+        return add_query_arg(
+            array(
+                'utm_source'   => $utm_source,
+                'utm_medium'   => $utm_medium,
+                'utm_campaign' => $utm_campaign,
+                'utm_content'  => $utm_content,
+            ),
+            trailingslashit( $url )
+        );
+    }
 }

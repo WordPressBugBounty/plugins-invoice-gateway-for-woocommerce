@@ -1,4 +1,5 @@
-<?php if ( !defined( 'ABSPATH' ) ) exit; // Exit if accessed directly ?>
+<?php if ( ! defined( 'ABSPATH' ) ) {
+    exit;} // Exit if accessed directly ?>
 
 <div id="igfw-invoice-gateway-meta-box">
     

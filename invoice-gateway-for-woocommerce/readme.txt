@@ -2,8 +2,8 @@
 Contributors: jkohlbach, RymeraWebCo, smub
 Tags: woocommerce invoice gateway, woocommerce payment gateway, woocommerce invoices, invoice gateway, woocommerce quotes
 Requires at least: 5.2
-Tested up to: 6.3.1
-Stable tag: 1.1.3
+Tested up to: 6.7
+Stable tag: 1.1.4
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -61,6 +61,13 @@ We'll be publishing a list of frequently asked questions soon.
 Coming Soon!
 
 == Changelog ==
+
+= 1.1.4 =
+* Feature: Pointer to recommend upgrading to Wholesale Payments
+* Improvement: Update upsell to include Wholesale Payments
+* Bug Fix: When Cart is at `$0`, it will hide other payment methods
+* Bug Fix: Integration with PHP Version 8.2 and Up
+* Compatibility Issue with WooCommerce Block - Checkout Block
 
 = 1.1.3 =
 * Improvement: Add filters to Purchase Order text and descriptions

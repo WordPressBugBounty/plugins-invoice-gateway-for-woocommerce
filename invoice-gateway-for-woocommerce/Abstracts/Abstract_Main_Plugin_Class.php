@@ -1,9 +1,20 @@
 <?php
+/**
+ * Abstract main plugin class.
+ *
+ * @package Invoice_Gateway_For_WooCommerce
+ * @subpackage Abstracts
+ * @since 1.0.0
+ * @since 1.1.4 - Applied PHPCS Rules. Compatibility for PHP 8.2+
+ */
+
 namespace IGFW\Abstracts;
 
 use IGFW\Interfaces\Model_Interface;
 
-if ( !defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
+if ( ! defined( 'ABSPATH' ) ) {
+    exit; // Exit if accessed directly.
+}
 
 /**
  * Abstract class that the main plugin class needs to extend.
@@ -19,7 +30,7 @@ abstract class Abstract_Main_Plugin_Class {
      * @access protected
      * @var array
      */
-    protected $__all_models = array();
+    protected $all_models = array();
 
     /**
      * Property that houses an array of all "public regular models" of the plugin.
@@ -42,9 +53,9 @@ abstract class Abstract_Main_Plugin_Class {
     public function add_to_all_plugin_models( Model_Interface $model ) {
 
         $class_name = get_class( $model );
-        if ( !array_key_exists( $class_name , $this->__all_models ) )
-            $this->__all_models[ $class_name ] = $model;
-        
+        if ( ! array_key_exists( $class_name, $this->all_models ) ) {
+            $this->all_models[ $class_name ] = $model;
+        }
     }
 
     /**
@@ -56,11 +67,10 @@ abstract class Abstract_Main_Plugin_Class {
      * @param Model_Interface $model Regular model.
      */
     public function add_to_public_models( Model_Interface $model ) {
-        
-        $class_name = get_class( $model );
-        if ( !array_key_exists( $class_name , $this->models ) )
-            $this->models[ $class_name ] = $model;
-        
-    }
 
+        $class_name = get_class( $model );
+        if ( ! array_key_exists( $class_name, $this->models ) ) {
+            $this->models[ $class_name ] = $model;
+        }
+    }
 }
