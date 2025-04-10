@@ -125,17 +125,20 @@ class WPAY_Pointer implements Model_Interface {
     public function admin_bar_menu() {
         global $wp_admin_bar;
 
-        if ( ! is_admin() || ! $this->should_load_pointer() || ! current_user_can( 'manage_options' ) ) {
+        if ( ! is_admin() || ! $this->should_load_pointer() ) {
             return;
         }
 
-        $wp_admin_bar->add_node(
-            array(
-                'id'    => 'igfw_toolbar',
-                'title' => $this->get_admin_bar_title(),
-                'href'  => admin_url( 'admin.php?page=wc-settings&tab=igfw_settings' ),
-            )
-        );
+        $current_screen = get_current_screen();
+        if ( strpos( $current_screen->id, 'wholesale' ) !== false && $this->maybe_load_pointer() ) {
+            $wp_admin_bar->add_node(
+                array(
+                    'id'    => 'igfw_toolbar',
+                    'title' => $this->get_admin_bar_title(),
+                    'href'  => admin_url( 'admin.php?page=wc-settings&tab=igfw_settings' ),
+                )
+            );
+        }
     }
 
     /**
@@ -163,18 +166,16 @@ class WPAY_Pointer implements Model_Interface {
      * @return void
      */
     public function enqueue_pointer() {
-        if ( ! $this->should_load_pointer() || ! current_user_can( 'manage_options' ) ) {
-            return;
+        if ( $this->should_load_pointer() ) {
+            wp_enqueue_style( 'wp-pointer' );
+            wp_enqueue_script( 'wp-pointer' );
+            wp_enqueue_style(
+                'igfw-admin-pointer',
+                $this->constants->build_dir_url() . 'pointer.css',
+                array(),
+                $this->constants::VERSION
+            );
         }
-
-        wp_enqueue_style( 'wp-pointer' );
-        wp_enqueue_script( 'wp-pointer' );
-        wp_enqueue_style(
-            'igfw-admin-pointer',
-            $this->constants->build_dir_url() . 'pointer.css',
-            array(),
-            $this->constants::VERSION
-        );
     }
 
     /**
@@ -218,14 +219,6 @@ class WPAY_Pointer implements Model_Interface {
      * @return bool
      */
     public function should_load_pointer() {
-        if ( is_plugin_active( self::WPAY_PLUGIN_NAME ) ) {
-            return true;
-        }
-
-        if ( filter_input( INPUT_GET, 'page', FILTER_SANITIZE_FULL_SPECIAL_CHARS ) !== 'wc-settings' ) {
-            return false;
-        }
-
         $activation_date     = get_option( 'igfw_activation_date' );
         $activation_datetime = $activation_date ? strtotime( $activation_date ) : false;
         $now                 = time();
@@ -240,6 +233,26 @@ class WPAY_Pointer implements Model_Interface {
     }
 
     /**
+     * Maybe load pointer
+     *
+     * @since 1.1.4
+     * @access public
+     *
+     * @return bool
+     */
+    public function maybe_load_pointer() {
+        $wpay_installed = $this->helper_functions->is_plugin_installed( self::WPAY_PLUGIN_NAME );
+
+        if ( ! $wpay_installed ) {
+            return true;
+        } elseif ( $wpay_installed && ! is_plugin_active( self::WPAY_PLUGIN_NAME ) ) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
      * Load pointer
      *
      * @since 1.1.4
@@ -248,33 +261,31 @@ class WPAY_Pointer implements Model_Interface {
      * @return void
      */
     public function load_pointer() {
-        if ( ! $this->should_load_pointer() || ! current_user_can( 'manage_options' ) ) {
-            return;
+        if ( $this->should_load_pointer() && $this->maybe_load_pointer() ) {
+            ?>
+            <script type="text/javascript">
+                jQuery(document).ready(function($) {
+                    $("#wp-admin-bar-igfw_toolbar").pointer({
+                        "content": "<?php echo wp_kses_post( trim( $this->get_pointer_content() ) ); ?>",
+                        "buttons": function (event, t) {
+                            var redirectUrl = '<?php echo admin_url( 'admin-ajax.php?action=igfw_dismiss_pointer&key=igfw_dismiss_pointer&nonce=' . wp_create_nonce( 'igfw_dismiss_pointer' ) . '&redirect=' . basename( $_SERVER['REQUEST_URI'] ) ); // phpcs:ignore ?>';
+                            var button = $('<a class="close" href="' + redirectUrl + '"></a>').text(wp.i18n.__('Dismiss Forever'));
+
+                            return button.on('click.pointer', function (e) {
+                                e.preventDefault();
+                                jQuery('#wp-admin-bar-igfw_toolbar').remove();
+                                window.location.href = redirectUrl;
+                                t.element.pointer('close');
+                            });
+                        },
+                        "position": {"edge": "top", "align": "center"},
+                        "pointerClass": "igfw-bar-tooltip",
+                        "pointerWidth": 370,
+                    }).pointer('open');
+                });
+            </script>
+            <?php
         }
-
-        ?>
-        <script type="text/javascript">
-            jQuery(document).ready(function($) {
-                $("#wp-admin-bar-igfw_toolbar").pointer({
-                    "content": "<?php echo wp_kses_post( trim( $this->get_pointer_content() ) ); ?>",
-                    "buttons": function (event, t) {
-                        var redirectUrl = '<?php echo admin_url( 'admin-ajax.php?action=igfw_dismiss_pointer&key=igfw_dismiss_pointer&nonce=' . wp_create_nonce( 'igfw_dismiss_pointer' ) . '&redirect=' . basename( $_SERVER['REQUEST_URI'] ) ); // phpcs:ignore ?>';
-                        var button = $('<a class="close" href="' + redirectUrl + '"></a>').text(wp.i18n.__('Dismiss Forever'));
-
-                        return button.on('click.pointer', function (e) {
-                            e.preventDefault();
-                            jQuery('#wp-admin-bar-igfw_toolbar').remove();
-                            window.location.href = redirectUrl;
-                            t.element.pointer('close');
-                        });
-                    },
-                    "position": {"edge": "top", "align": "center"},
-                    "pointerClass": "igfw-bar-tooltip",
-                    "pointerWidth": 370,
-                }).pointer('open');
-            });
-        </script>
-        <?php
     }
 
     /**

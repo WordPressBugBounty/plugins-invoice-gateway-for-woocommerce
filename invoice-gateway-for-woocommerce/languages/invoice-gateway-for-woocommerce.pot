@@ -2,14 +2,14 @@
 # This file is distributed under the same license as the Invoice Gateway For WooCommerce plugin.
 msgid ""
 msgstr ""
-"Project-Id-Version: Invoice Gateway For WooCommerce 1.1.4\n"
+"Project-Id-Version: Invoice Gateway For WooCommerce 1.1.4.2\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/invoice-gateway-for-woocommerce\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2025-04-01T23:21:27+00:00\n"
+"POT-Creation-Date: 2025-04-10T06:49:42+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.11.0\n"
 "X-Domain: invoice-gateway-for-woocommerce\n"
@@ -364,39 +364,39 @@ msgstr ""
 msgid "Installing..."
 msgstr ""
 
-#: Models/WPAY_Pointer.php:153
-#: Models/WPAY_Pointer.php:154
+#: Models/WPAY_Pointer.php:156
+#: Models/WPAY_Pointer.php:157
 msgid "Wholesale Payments"
 msgstr ""
 
-#: Models/WPAY_Pointer.php:189
+#: Models/WPAY_Pointer.php:190
 msgid "Setup Wholesale Payments (Recommended)"
 msgstr ""
 
-#: Models/WPAY_Pointer.php:190
+#: Models/WPAY_Pointer.php:191
 msgid "We hope you're enjoying Invoice Gateways plugin. Did you know there's a more powerful way to invoice your customers? It's called Wholesale Payments plugin."
 msgstr ""
 
-#: Models/WPAY_Pointer.php:192
+#: Models/WPAY_Pointer.php:193
 msgid "Create NET 30, 60, or any other invoice payment plan"
 msgstr ""
 
-#: Models/WPAY_Pointer.php:193
+#: Models/WPAY_Pointer.php:194
 msgid "Works exclusively with wholesale customers"
 msgstr ""
 
-#: Models/WPAY_Pointer.php:194
+#: Models/WPAY_Pointer.php:195
 msgid "Restrict which customers can use payment plans"
 msgstr ""
 
-#: Models/WPAY_Pointer.php:195
+#: Models/WPAY_Pointer.php:196
 msgid "Backed by Stripe's Invoice API"
 msgstr ""
 
-#: Models/WPAY_Pointer.php:203
+#: Models/WPAY_Pointer.php:204
 msgid "Get Wholesale Payments"
 msgstr ""
 
-#: Models/WPAY_Pointer.php:206
+#: Models/WPAY_Pointer.php:207
 msgid "Activate Wholesale Payments"
 msgstr ""
