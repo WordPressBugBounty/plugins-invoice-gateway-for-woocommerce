@@ -42,7 +42,7 @@ class Plugin_Constants {
     // Plugin configuration constants.
     const TOKEN               = 'igfw';
     const INSTALLED_VERSION   = 'igfw_installed_version';
-    const VERSION             = '1.1.4.2';
+    const VERSION             = '1.1.4.3';
     const TEXT_DOMAIN         = 'invoice-gateway-for-woocommerce';
     const THEME_TEMPLATE_PATH = 'invoice-gateway-for-woocommerce';
 

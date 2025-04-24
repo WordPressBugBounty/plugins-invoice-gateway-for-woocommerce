@@ -210,12 +210,7 @@ class IGFW_Settings extends \WC_Settings_Page {
                 'type'    => 'select',
                 'desc'    => __( 'Select the default order status for invoice gateway.', 'invoice-gateway-for-woocommerce' ),
                 'id'      => 'igfw_default_order_status',
-                'options' => array(
-                    'on-hold'    => __( 'On Hold', 'invoice-gateway-for-woocommerce' ),
-                    'processing' => __( 'Processing', 'invoice-gateway-for-woocommerce' ),
-                    'pending'    => __( 'Pending Payment', 'invoice-gateway-for-woocommerce' ),
-                    'completed'  => __( 'Completed', 'invoice-gateway-for-woocommerce' ),
-                ),
+                'options' => $this->get_wc_order_statuses(),
             ),
 
             array(
@@ -404,5 +399,35 @@ class IGFW_Settings extends \WC_Settings_Page {
             </th>
         </tr>
         <?php
+    }
+
+    /**
+     * Get all available WooCommerce order statuses
+     * excluding those that aren't relevant for new orders.
+     *
+     * @since 1.1.5
+     * @access private
+     *
+     * @return array
+     */
+    private function get_wc_order_statuses() {
+        $order_statuses = wc_get_order_statuses();
+        $statuses       = array();
+
+        // Statuses to exclude (not relevant for new orders).
+        $excluded_statuses = array( 'wc-cancelled', 'wc-failed', 'wc-refunded', 'wc-trash', 'wc-checkout-draft' );
+
+        // Convert statuses from wc-status format to status format (strip the wc- prefix).
+        foreach ( $order_statuses as $status_key => $status_label ) {
+            // Skip excluded statuses.
+            if ( in_array( $status_key, $excluded_statuses, true ) ) {
+                continue;
+            }
+
+            $key              = str_replace( 'wc-', '', $status_key );
+            $statuses[ $key ] = $status_label;
+        }
+
+        return $statuses;
     }
 }

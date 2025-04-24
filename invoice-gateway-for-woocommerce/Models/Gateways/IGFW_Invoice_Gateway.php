@@ -273,9 +273,12 @@ class IGFW_Invoice_Gateway extends \WC_Payment_Gateway {
 
         $order = wc_get_order( $order_id );
 
-        // Mark as on-hold (we're awaiting invoice payment).
+        // Get the default status from settings, fallback to 'on-hold' if not set.
+        $default_status = get_option( 'igfw_default_order_status', 'on-hold' );
+        
+        // Mark as the configured default status.
         $order->update_status(
-            apply_filters( 'igfw_invoice_gateway_default_order_status', 'on-hold' ),
+            apply_filters( 'igfw_invoice_gateway_default_order_status', $default_status ),
             __( 'Awaiting invoice payment. A notification has been sent to the store admin and the customer.', 'invoice-gateway-for-woocommerce' )
         );
 

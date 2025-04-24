@@ -2,14 +2,14 @@
 # This file is distributed under the same license as the Invoice Gateway For WooCommerce plugin.
 msgid ""
 msgstr ""
-"Project-Id-Version: Invoice Gateway For WooCommerce 1.1.4.2\n"
+"Project-Id-Version: Invoice Gateway For WooCommerce 1.1.4.3\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/invoice-gateway-for-woocommerce\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2025-04-10T06:49:42+00:00\n"
+"POT-Creation-Date: 2025-04-24T04:11:33+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.11.0\n"
 "X-Domain: invoice-gateway-for-woocommerce\n"
@@ -171,7 +171,7 @@ msgstr ""
 msgid "Accept invoice payments if the order is virtual"
 msgstr ""
 
-#: Models/Gateways/IGFW_Invoice_Gateway.php:279
+#: Models/Gateways/IGFW_Invoice_Gateway.php:282
 msgid "Awaiting invoice payment. A notification has been sent to the store admin and the customer."
 msgstr ""
 
@@ -207,91 +207,75 @@ msgstr ""
 msgid "Select the default order status for invoice gateway."
 msgstr ""
 
-#: Models/IGFW_Settings.php:214
-msgid "On Hold"
-msgstr ""
-
-#: Models/IGFW_Settings.php:215
-msgid "Processing"
-msgstr ""
-
-#: Models/IGFW_Settings.php:216
-msgid "Pending Payment"
-msgstr ""
-
-#: Models/IGFW_Settings.php:217
-msgid "Completed"
-msgstr ""
-
-#: Models/IGFW_Settings.php:242
+#: Models/IGFW_Settings.php:237
 msgid "Help Options"
 msgstr ""
 
-#: Models/IGFW_Settings.php:256
+#: Models/IGFW_Settings.php:251
 msgid "Clean up plugin options on un-installation"
 msgstr ""
 
-#: Models/IGFW_Settings.php:258
+#: Models/IGFW_Settings.php:253
 msgid "If checked, removes all plugin options when this plugin is uninstalled. <b>Warning:</b> This process is irreversible."
 msgstr ""
 
-#: Models/IGFW_Settings.php:289
+#: Models/IGFW_Settings.php:284
 msgid "Knowledge Base"
 msgstr ""
 
 #. Translators: %1$s is the URL to the knowledge base.
-#: Models/IGFW_Settings.php:294
+#: Models/IGFW_Settings.php:289
 msgid "Looking for documentation? Please see our growing <a href=\"%1$s\" target=\"_blank\">Knowledge Base</a>"
 msgstr ""
 
-#: Models/IGFW_Settings.php:315
+#: Models/IGFW_Settings.php:310
 msgid "Invoice Gateway Settings"
 msgstr ""
 
 #. Translators: %1$s is the URL to the invoice gateway settings.
-#: Models/IGFW_Settings.php:322
+#: Models/IGFW_Settings.php:317
 msgid "Click <a href=\"%1$s\">here</a> to configure the invoice payment gateway."
 msgstr ""
 
-#: Models/IGFW_Settings.php:342
+#: Models/IGFW_Settings.php:337
 #: Models/Script_Loader.php:153
 msgid "Go to Settings"
 msgstr ""
 
-#: Models/IGFW_Settings.php:345
+#: Models/IGFW_Settings.php:340
 msgid "Install & Activate (FREE)"
 msgstr ""
 
-#: Models/IGFW_Settings.php:347
+#: Models/IGFW_Settings.php:342
 msgid "Activate Plugin"
 msgstr ""
 
-#: Models/IGFW_Settings.php:356
+#: Models/IGFW_Settings.php:351
 msgid "Enjoying Invoice Gateway for WooCommerce? Check out our other top rated plugins:"
 msgstr ""
 
-#: Models/IGFW_Settings.php:364
-#: Models/IGFW_Settings.php:389
+#: Models/IGFW_Settings.php:359
+#: Models/IGFW_Settings.php:384
 msgid "Wholesale Prices Icon"
 msgstr ""
 
-#: Models/IGFW_Settings.php:368
+#: Models/IGFW_Settings.php:363
 msgid "Wholesale Prices (Free Plugin)"
 msgstr ""
 
-#: Models/IGFW_Settings.php:370
+#: Models/IGFW_Settings.php:365
 msgid "Easily add wholesale pricing to your WooCommerce products. #1 wholesale plugin."
 msgstr ""
 
-#: Models/IGFW_Settings.php:393
+#: Models/IGFW_Settings.php:388
 msgid "Wholesale Payments by Wholesale Suite"
 msgstr ""
 
-#: Models/IGFW_Settings.php:395
+#: Models/IGFW_Settings.php:390
 msgid "Add NET 30/45/60 invoices for wholesale customers. Create your own invoice payment plans easily."
 msgstr ""
 
-#: Models/IGFW_Settings.php:398
+#: Models/IGFW_Settings.php:393
 msgid "Get Plugin"
 msgstr ""
 

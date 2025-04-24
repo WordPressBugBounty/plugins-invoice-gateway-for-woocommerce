@@ -3,7 +3,7 @@ Contributors: jkohlbach, RymeraWebCo, smub
 Tags: woocommerce invoice gateway, woocommerce payment gateway, woocommerce invoices, invoice gateway, woocommerce quotes
 Requires at least: 5.2
 Tested up to: 6.8
-Stable tag: 1.1.4.2
+Stable tag: 1.1.4.3
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -61,6 +61,9 @@ We'll be publishing a list of frequently asked questions soon.
 Coming Soon!
 
 == Changelog ==
+
+= 1.1.4.3 =
+* Improvement: add Support for Custom Order Statuses in the Default Order Status Setting
 
 = 1.1.4.2 =
 * Bug Fix: unable to dismiss pointer notice
