@@ -2,14 +2,14 @@
 # This file is distributed under the same license as the Invoice Gateway For WooCommerce plugin.
 msgid ""
 msgstr ""
-"Project-Id-Version: Invoice Gateway For WooCommerce 1.1.4.3\n"
+"Project-Id-Version: Invoice Gateway For WooCommerce 1.1.5\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/invoice-gateway-for-woocommerce\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2025-04-24T04:11:33+00:00\n"
+"POT-Creation-Date: 2025-09-08T01:06:43+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.11.0\n"
 "X-Domain: invoice-gateway-for-woocommerce\n"
@@ -296,17 +296,17 @@ msgid "<br>Enter the Invoice ID from your accounting system for tracking purpose
 msgstr ""
 
 #. Translators: %1$s is the user display name, %2$s is the type of invoice number, %3$s is the new invoice number.
-#: Models/Orders/IGFW_Order_CPT.php:256
+#: Models/Orders/IGFW_Order_CPT.php:255
 msgid "%1$s added %2$s %3$s."
 msgstr ""
 
 #. Translators: %1$s is the user display name, %2$s is the type of invoice number, %3$s is the existing invoice number.
-#: Models/Orders/IGFW_Order_CPT.php:259
+#: Models/Orders/IGFW_Order_CPT.php:258
 msgid "%1$s removed %2$s %3$s."
 msgstr ""
 
 #. Translators: %1$s is the user display name, %2$s is the type of invoice number, %3$s is the existing invoice number, %4$s is the new invoice number.
-#: Models/Orders/IGFW_Order_CPT.php:262
+#: Models/Orders/IGFW_Order_CPT.php:261
 msgid "%1$s updated %2$s from %3$s to %4$s."
 msgstr ""
 
@@ -318,7 +318,7 @@ msgstr ""
 
 #. Translators: %1$s is the invoice number.
 #: Models/Orders/IGFW_Order_Email.php:179
-msgid "Paid via invoice number: %s"
+msgid "Paid via invoice number: %1$s"
 msgstr ""
 
 #. Translators: %1$s is the invoice number.
@@ -328,7 +328,7 @@ msgstr ""
 
 #. Translators: %1$s is the purchase order number.
 #: Models/Orders/IGFW_Order_Email.php:192
-msgid "Purchase order number: %s"
+msgid "Purchase order number: %1$s"
 msgstr ""
 
 #. Translators: %1$s is the purchase order number.

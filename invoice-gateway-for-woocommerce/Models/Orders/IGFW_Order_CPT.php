@@ -215,9 +215,9 @@ class IGFW_Order_CPT implements Model_Interface {
 
             $order->update_meta_data( Plugin_Constants::INVOICE_NUMBER, $new_invoice_number );
 
-            if ( isset( $_POST['igfw_purchase_order_number'] ) ) {
-
-                $new_invoice_number      = isset( $_POST[ Plugin_Constants::PURCHASE_ORDER_NUMBER ] ) ?
+            // Save PO Number if enabled.
+            if ( get_option( 'igfw_enable_purchase_order_number' ) === 'yes' ) {
+                $new_po_number      = isset( $_POST[ Plugin_Constants::PURCHASE_ORDER_NUMBER ] ) ?
                     filter_var(
                         trim(
                             sanitize_text_field( $_POST[ Plugin_Constants::PURCHASE_ORDER_NUMBER ] )
@@ -225,12 +225,11 @@ class IGFW_Order_CPT implements Model_Interface {
                         FILTER_SANITIZE_STRING
                     ) :
                     '';
-                $existing_invoice_number = $order->get_meta( Plugin_Constants::PURCHASE_ORDER_NUMBER, true );
+                $existing_po_number = $order->get_meta( Plugin_Constants::PURCHASE_ORDER_NUMBER, true );
 
-                $this->log_invoice_number_activity( 'purchase order number', $new_invoice_number, $existing_invoice_number, $order );
+                $this->log_invoice_number_activity( 'purchase order number', $new_po_number, $existing_po_number, $order );
 
-                $order->update_meta_data( Plugin_Constants::PURCHASE_ORDER_NUMBER, $new_invoice_number );
-
+                $order->update_meta_data( Plugin_Constants::PURCHASE_ORDER_NUMBER, $new_po_number );
             }
         }
     }
@@ -311,7 +310,7 @@ class IGFW_Order_CPT implements Model_Interface {
      */
     public function show_invoice_payment_gateway_on_free_orders( $needs_payment, $cart ) {
 
-        $enabled_payment_gateways = WC()->payment_gateways->get_available_payment_gateways();
+        $enabled_payment_gateways = property_exists( WC(), 'payment_gateways' ) ? WC()->payment_gateways->get_available_payment_gateways() : array();
 
         $cart_total = wc_format_decimal( $cart->get_total( 'edit' ), wc_get_price_decimals() );
         $zero_price = wc_format_decimal( 0, wc_get_price_decimals() );

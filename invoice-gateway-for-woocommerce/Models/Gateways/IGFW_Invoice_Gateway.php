@@ -282,6 +282,17 @@ class IGFW_Invoice_Gateway extends \WC_Payment_Gateway {
             __( 'Awaiting invoice payment. A notification has been sent to the store admin and the customer.', 'invoice-gateway-for-woocommerce' )
         );
 
+        // Save the PO Number if provided and enabled.
+        // phpcs:disable WordPress.Security.NonceVerification.Missing
+        if ( get_option( 'igfw_enable_purchase_order_number' ) === 'yes' && isset( $_POST['igfw_purchase_order_number'] ) ) {
+            $po_number = sanitize_text_field( $_POST['igfw_purchase_order_number'] );
+            if ( ! empty( $po_number ) ) {
+                $order->update_meta_data( \IGFW\Helpers\Plugin_Constants::PURCHASE_ORDER_NUMBER, $po_number );
+                $order->save();
+            }
+        }
+        // phpcs:enable WordPress.Security.NonceVerification.Missing
+
         // Reduce stock levels.
         wc_reduce_stock_levels( $order_id );
 

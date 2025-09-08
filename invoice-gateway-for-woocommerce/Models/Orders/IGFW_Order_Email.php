@@ -176,10 +176,10 @@ class IGFW_Order_Email implements Model_Interface {
 
                     if ( $plain_text ) {
                         // Translators: %1$s is the invoice number.
-                        echo esc_html( sprintf( __( 'Paid via invoice number: %s', 'invoice-gateway-for-woocommerce' ), $invoice_number ) );
+                        echo esc_html( sprintf( __( 'Paid via invoice number: %1$s', 'invoice-gateway-for-woocommerce' ), $invoice_number ) ) . "\n";
                     } else {
                         // Translators: %1$s is the invoice number.
-                        echo esc_html( sprintf( __( '<br><p>Paid via invoice number: <b>%1$s</b></p>', 'invoice-gateway-for-woocommerce' ), $invoice_number ) );
+                        echo wp_kses_post( sprintf( __( '<br><p>Paid via invoice number: <b>%1$s</b></p>', 'invoice-gateway-for-woocommerce' ), $invoice_number ) );
                     }
                 }
 
@@ -189,10 +189,10 @@ class IGFW_Order_Email implements Model_Interface {
 
                     if ( $plain_text ) {
                         // Translators: %1$s is the purchase order number.
-                        echo esc_html( sprintf( __( 'Purchase order number: %s', 'invoice-gateway-for-woocommerce' ), $po_number ) );
+                        echo esc_html( sprintf( __( 'Purchase order number: %1$s', 'invoice-gateway-for-woocommerce' ), $po_number ) ) . "\n";
                     } else {
                         // Translators: %1$s is the purchase order number.
-                        echo esc_html( sprintf( __( '<p>Purchase order number: <b>%1$s</b></p>', 'invoice-gateway-for-woocommerce' ), $po_number ) );
+                        echo wp_kses_post( sprintf( __( '<p>Purchase order number: <b>%1$s</b></p>', 'invoice-gateway-for-woocommerce' ), $po_number ) );
                     }
                 }
             }

@@ -3,7 +3,7 @@ Contributors: jkohlbach, RymeraWebCo, smub
 Tags: woocommerce invoice gateway, woocommerce payment gateway, woocommerce invoices, invoice gateway, woocommerce quotes
 Requires at least: 5.2
 Tested up to: 6.8
-Stable tag: 1.1.4.3
+Stable tag: 1.1.5
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -54,13 +54,18 @@ We decided to give this invoice gateway WooCommerce feature away for free, not j
 
 == Frequently asked questions ==
 
-We'll be publishing a list of frequently asked questions soon.
+= How can I report security bugs? =
+You can report security bugs through the Patchstack Vulnerability Disclosure Program. The Patchstack team helps validate, triage and handle any security vulnerabilities. [Report a security vulnerability.](https://patchstack.com/database/vdp/9e5fbf59-c044-416f-bc90-a89c20bc06e2)
 
 == Screenshots ==
 
 Coming Soon!
 
 == Changelog ==
+
+= 1.1.5 =
+- Bug Fix: Fatal Error: WooCommerce Payment Gateways Property Null in Invoice Gateway for Free Orders
+- Bug Fix: PO Number On Orders Not Saved If You Use Legacy Checkout
 
 = 1.1.4.3 =
 * Improvement: add Support for Custom Order Statuses in the Default Order Status Setting
