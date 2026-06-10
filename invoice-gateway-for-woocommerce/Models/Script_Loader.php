@@ -235,15 +235,17 @@ class Script_Loader implements Model_Interface {
             'igfw-blocks-integration',
             'igfw_invoice_gateway',
             array(
-                'title'                          => isset( $settings['title'] ) ? $settings['title'] : __( 'Invoice Payment', 'invoice-gateway-for-woocommerce' ),
-                'description'                    => isset( $settings['description'] ) ? $settings['description'] : __( 'Pay with an invoice processed through our accounting system.', 'invoice-gateway-for-woocommerce' ),
-                'supports'                       => array( 'products', 'shipping_address' ),
-                'enableForMethods'               => isset( $settings['enable_for_methods'] ) ? $settings['enable_for_methods'] : array(),
-                'enableForVirtual'               => isset( $settings['enable_for_virtual'] ) && 'yes' === $settings['enable_for_virtual'],
-                'enablePurchaseOrderNumber'      => 'yes' === get_option( 'igfw_enable_purchase_order_number', 'no' ),
-                'purchaseOrderNumberTitle'       => apply_filters( 'igfw_purchase_order_number_title', __( 'Purchase Order (optional)', 'invoice-gateway-for-woocommerce' ) ),
-                'purchaseOrderNumberPlaceholder' => apply_filters( 'igfw_purchase_order_number_placeholder', __( 'PO Number', 'invoice-gateway-for-woocommerce' ) ),
-                'purchaseOrderNumberDesc'        => apply_filters( 'igfw_purchase_order_number_desc', __( 'We will generate and send you an invoice for your order, if you have a PO number, please enter it.', 'invoice-gateway-for-woocommerce' ) ),
+                'title'                            => isset( $settings['title'] ) ? $settings['title'] : __( 'Invoice Payment', 'invoice-gateway-for-woocommerce' ),
+                'description'                      => isset( $settings['description'] ) ? $settings['description'] : __( 'Pay with an invoice processed through our accounting system.', 'invoice-gateway-for-woocommerce' ),
+                'supports'                         => array( 'products', 'shipping_address' ),
+                'enableForMethods'                 => isset( $settings['enable_for_methods'] ) ? $settings['enable_for_methods'] : array(),
+                'enableForVirtual'                 => isset( $settings['enable_for_virtual'] ) && 'yes' === $settings['enable_for_virtual'],
+                'enablePurchaseOrderNumber'        => 'yes' === get_option( 'igfw_enable_purchase_order_number', 'no' ),
+                'requirePurchaseOrderNumber'       => Helper_Functions::is_purchase_order_number_required(),
+                'purchaseOrderNumberTitle'         => Helper_Functions::get_purchase_order_number_title(),
+                'purchaseOrderNumberPlaceholder'   => apply_filters( 'igfw_purchase_order_number_placeholder', __( 'PO Number', 'invoice-gateway-for-woocommerce' ) ),
+                'purchaseOrderNumberDesc'          => apply_filters( 'igfw_purchase_order_number_desc', __( 'We will generate and send you an invoice for your order, if you have a PO number, please enter it.', 'invoice-gateway-for-woocommerce' ) ),
+                'purchaseOrderNumberRequiredError' => Helper_Functions::get_purchase_order_number_required_error(),
             )
         );
 

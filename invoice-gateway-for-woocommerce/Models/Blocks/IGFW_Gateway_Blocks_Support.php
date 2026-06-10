@@ -10,6 +10,7 @@
 namespace IGFW\Models\Blocks;
 
 use IGFW\Helpers\Plugin_Constants;
+use IGFW\Helpers\Helper_Functions;
 use IGFW\Interfaces\Model_Interface;
 use IGFW\Abstracts\Abstract_Main_Plugin_Class;
 use Automattic\WooCommerce\Blocks\Payments\PaymentMethodRegistry;
@@ -108,8 +109,11 @@ class IGFW_Gateway_Blocks_Support implements Model_Interface {
      * @param PaymentResult  $payment_result  Payment result.
      *
      * @since 1.1.4
+     * @since 1.1.6 Enforce the required Purchase Order Number setting.
      *
-     * @return PaymentResult $payment_result
+     * @throws \Exception When a Purchase Order Number is required but missing.
+     *
+     * @return PaymentResult The payment result; returned for hook-signature symmetry (the action's return value is not consumed).
      */
     public function process_purchase_order_number( PaymentContext $payment_context, PaymentResult &$payment_result ) {
 
@@ -125,6 +129,10 @@ class IGFW_Gateway_Blocks_Support implements Model_Interface {
         $request = $payment_context->payment_data;
 
         $po_number = isset( $request['igfw_purchase_order_number'] ) ? sanitize_text_field( $request['igfw_purchase_order_number'] ) : '';
+
+        if ( Helper_Functions::is_purchase_order_number_required() && '' === $po_number ) {
+            throw new \Exception( esc_html( Helper_Functions::get_purchase_order_number_required_error() ) );
+        }
 
         if ( ! empty( $po_number ) ) {
             $order->update_meta_data( \IGFW\Helpers\Plugin_Constants::PURCHASE_ORDER_NUMBER, $po_number );

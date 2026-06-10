@@ -18,10 +18,13 @@ const settings = window.igfw_invoice_gateway || {
   enableForMethods: [],
   enableForVirtual: false,
   enablePurchaseOrderNumber: false,
+  requirePurchaseOrderNumber: false,
   purchaseOrderNumberTitle: "Purchase Order (optional)",
   purchaseOrderNumberPlaceholder: "PO Number",
   purchaseOrderNumberDesc:
     "We will generate and send you an invoice for your order, if you have a PO number, please enter it.",
+  purchaseOrderNumberRequiredError:
+    "Please enter a Purchase Order Number to continue.",
 };
 
 /**
@@ -42,6 +45,16 @@ const InvoiceGatewayComponent = ({ eventRegistration, emitResponse }) => {
         const poNumber =
           document.querySelector('input[name="igfw_purchase_order_number"]')
             ?.value || "";
+
+        // Block checkout when the PO number is required but empty.
+        if (settings.requirePurchaseOrderNumber && !poNumber.trim()) {
+          return {
+            type: emitResponse.responseTypes.ERROR,
+            message: settings.purchaseOrderNumberRequiredError,
+            messageContext: emitResponse.noticeContexts.PAYMENTS,
+          };
+        }
+
         paymentData.igfw_purchase_order_number = poNumber;
       }
 
@@ -56,7 +69,7 @@ const InvoiceGatewayComponent = ({ eventRegistration, emitResponse }) => {
     });
 
     return () => unsubscribe();
-  }, [onPaymentProcessing]);
+  }, [onPaymentProcessing, emitResponse]);
 
   return (
     <>
@@ -77,6 +90,7 @@ const InvoiceGatewayComponent = ({ eventRegistration, emitResponse }) => {
               id="igfw_purchase_order_number"
               name="igfw_purchase_order_number"
               aria-label={decodeEntities(settings.purchaseOrderNumberTitle)}
+              aria-required={settings.requirePurchaseOrderNumber || undefined}
               placeholder={decodeEntities(
                 settings.purchaseOrderNumberPlaceholder
               )}
@@ -111,9 +125,6 @@ if (
     }) => {
       // Virtual order, with virtual disabled.
       if (!cartNeedsShipping && !settings.enableForVirtual) {
-        console.warn(
-          "Not showing invoice gateway because cart is virtual and virtual is disabled"
-        );
         return false;
       }
 
@@ -136,7 +147,7 @@ if (
 
       return true;
     },
-    placeOrderButtonLabel: "Place order",
+    placeOrderButtonLabel: __("Place order", "invoice-gateway-for-woocommerce"),
     ariaLabel: decodeEntities(settings.title),
     paymentMethodId: "igfw_invoice_gateway",
     supports: {

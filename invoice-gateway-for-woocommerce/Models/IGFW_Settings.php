@@ -79,7 +79,53 @@ class IGFW_Settings extends \WC_Settings_Page {
         add_action( 'woocommerce_admin_field_igfw_help_resources_field', array( $this, 'render_igfw_help_resources_field' ) );
         add_action( 'woocommerce_admin_field_igfw_invoice_gateway_settings_link_field', array( $this, 'render_igfw_invoice_gateway_settings_link_field' ) );
         add_action( 'woocommerce_admin_field_igfw_plugin_installer_field', array( $this, 'render_igfw_plugin_installer_field' ) );
+
+        // Validate the additional New Order recipients at save time.
+        add_filter( 'woocommerce_admin_settings_sanitize_option_igfw_additional_new_order_recipients', array( $this, 'sanitize_additional_new_order_recipients' ), 10, 3 );
+
         do_action( 'igfw_settings_construct' );
+    }
+
+    /**
+     * Validate the "Additional New Order Email Recipient(s)" option when settings are saved.
+     *
+     * Splits the comma-separated value, drops any token that isn't a valid email,
+     * and surfaces a settings error listing the removed addresses so the admin gets
+     * feedback instead of the silent send-time drop. Returns the cleaned list.
+     *
+     * @since 1.1.6
+     * @access public
+     *
+     * @param string $value     The sanitized option value (post `wc_clean`).
+     * @param array  $option    The option definition (unused).
+     * @param string $raw_value The raw posted value (unused).
+     * @return string Comma-separated list of valid email addresses.
+     */
+    public function sanitize_additional_new_order_recipients( $value, $option = array(), $raw_value = '' ) {
+
+        $emails  = array_filter( array_map( 'trim', explode( ',', (string) $value ) ) );
+        $valid   = array();
+        $invalid = array();
+
+        foreach ( $emails as $email ) {
+            if ( is_email( $email ) ) {
+                $valid[] = $email;
+            } else {
+                $invalid[] = $email;
+            }
+        }
+
+        if ( ! empty( $invalid ) ) {
+            \WC_Admin_Settings::add_error(
+                sprintf(
+                    /* translators: %s: comma-separated list of invalid email addresses that were removed. */
+                    __( 'Invoice Gateway: the following Additional New Order Email Recipient(s) are not valid email addresses and were removed: %s', 'invoice-gateway-for-woocommerce' ),
+                    implode( ', ', array_unique( $invalid ) )
+                )
+            );
+        }
+
+        return implode( ', ', array_unique( $valid ) );
     }
 
     /**
@@ -93,8 +139,9 @@ class IGFW_Settings extends \WC_Settings_Page {
     public function get_sections() {
 
         $sections = array(
-            ''                          => __( 'General', 'invoice-gateway-for-woocommerce' ),
-            'igfw_setting_help_section' => __( 'Help', 'invoice-gateway-for-woocommerce' ),
+            ''                                  => __( 'General', 'invoice-gateway-for-woocommerce' ),
+            'igfw_setting_restrictions_section' => __( 'Restrictions', 'invoice-gateway-for-woocommerce' ),
+            'igfw_setting_help_section'         => __( 'Help', 'invoice-gateway-for-woocommerce' ),
         );
 
         return apply_filters( 'woocommerce_get_sections_' . $this->id, $sections );
@@ -148,6 +195,11 @@ class IGFW_Settings extends \WC_Settings_Page {
 
             // Help Section Options.
             $settings = apply_filters( 'igfw_setting_help_section_options', $this->get_help_section_options() );
+
+        } elseif ( 'igfw_setting_restrictions_section' === $current_section ) {
+
+            // Restrictions Section Options.
+            $settings = apply_filters( 'igfw_setting_restrictions_section_options', $this->get_restrictions_section_options() );
 
         } else {
 
@@ -206,6 +258,13 @@ class IGFW_Settings extends \WC_Settings_Page {
             ),
 
             array(
+                'name' => __( 'Require Purchase Order Number', 'invoice-gateway-for-woocommerce' ),
+                'type' => 'checkbox',
+                'desc' => __( 'Require customers to enter a Purchase Order Number before they can place the order. Only applies when "Enable Purchase Order Number" is on.', 'invoice-gateway-for-woocommerce' ),
+                'id'   => 'igfw_require_purchase_order_number',
+            ),
+
+            array(
                 'name'    => __( 'Default Order Status', 'invoice-gateway-for-woocommerce' ),
                 'type'    => 'select',
                 'desc'    => __( 'Select the default order status for invoice gateway.', 'invoice-gateway-for-woocommerce' ),
@@ -214,8 +273,148 @@ class IGFW_Settings extends \WC_Settings_Page {
             ),
 
             array(
+                'name' => __( 'Enable Payment Terms', 'invoice-gateway-for-woocommerce' ),
+                'type' => 'checkbox',
+                'desc' => __( 'Stamp a payment due date (Net X days) on invoice gateway orders and email the store admin when an order becomes overdue.', 'invoice-gateway-for-woocommerce' ),
+                'id'   => 'igfw_enable_payment_terms',
+            ),
+
+            array(
+                'name'              => __( 'Payment Terms (days)', 'invoice-gateway-for-woocommerce' ),
+                'type'              => 'number',
+                'desc'              => __( 'Number of days after the order is placed before payment is due (e.g. 30 for Net 30).', 'invoice-gateway-for-woocommerce' ),
+                'id'                => 'igfw_payment_terms_days',
+                'default'           => '30',
+                'css'               => 'width: 80px;',
+                'custom_attributes' => array(
+                    'min'  => 1,
+                    'step' => 1,
+                ),
+            ),
+
+            array(
+                'name'        => __( 'Additional New Order Email Recipient(s)', 'invoice-gateway-for-woocommerce' ),
+                'type'        => 'text',
+                'desc'        => __( 'Also send the New Order email to these address(es) when an order is paid via the invoice gateway. Separate multiple addresses with commas.', 'invoice-gateway-for-woocommerce' ),
+                'id'          => 'igfw_additional_new_order_recipients',
+                'css'         => 'min-width: 350px;',
+                'placeholder' => 'finance@example.com, manager@example.com',
+                'desc_tip'    => true,
+            ),
+
+            array(
+                'name' => __( 'Enable Pay Now Button', 'invoice-gateway-for-woocommerce' ),
+                'type' => 'checkbox',
+                'desc' => __( 'Add a Pay Now button to the customer On-hold and Invoice emails so customers can pay outstanding invoice orders online via your other enabled payment gateway(s). The Invoice Payment method itself is hidden on the pay page.', 'invoice-gateway-for-woocommerce' ),
+                'id'   => 'igfw_enable_pay_now_button',
+            ),
+
+            array(
                 'type' => 'sectionend',
                 'id'   => 'igfw_general_sectionend',
+            ),
+
+        );
+    }
+
+    /**
+     * Get restrictions section options.
+     *
+     * Simple, non-dollar gating only — dollar credit limits and overdue-aging
+     * restrictions live in Wholesale Payments.
+     *
+     * @since 1.1.6
+     * @access private
+     *
+     * @return array
+     */
+    private function get_restrictions_section_options() {
+
+        return array(
+
+            array(
+                'title' => __( 'Gateway Restrictions', 'invoice-gateway-for-woocommerce' ),
+                'type'  => 'title',
+                'desc'  => sprintf(
+                    // Translators: %1$s is the opening anchor tag, %2$s is the closing anchor tag.
+                    __( 'Control who can check out with the invoice gateway. Looking for dollar credit limits or overdue-based restrictions? Those are available in %1$sWholesale Payments%2$s.', 'invoice-gateway-for-woocommerce' ),
+                    '<a href="' . esc_url( Helper_Functions::get_utm_url( '', 'igfw', 'settings', 'restrictions' ) ) . '" target="_blank">',
+                    '</a>'
+                ),
+                'id'    => 'igfw_restrictions_section',
+            ),
+
+            array(
+                'name' => __( 'Enable Restrictions', 'invoice-gateway-for-woocommerce' ),
+                'type' => 'checkbox',
+                'desc' => __( 'Master toggle — none of the rules below apply unless this is on.', 'invoice-gateway-for-woocommerce' ),
+                'id'   => 'igfw_enable_gateway_restrictions',
+            ),
+
+            array(
+                'name' => __( 'Block When An Unpaid Invoice Exists', 'invoice-gateway-for-woocommerce' ),
+                'type' => 'checkbox',
+                'desc' => __( 'Hide the invoice gateway from logged-in customers who already have an unpaid invoice order.', 'invoice-gateway-for-woocommerce' ),
+                'id'   => 'igfw_restrict_existing_unpaid',
+            ),
+
+            array(
+                'name'              => __( 'Maximum Unpaid Invoices', 'invoice-gateway-for-woocommerce' ),
+                'type'              => 'number',
+                'desc'              => __( 'Hide the invoice gateway once a logged-in customer has this many unpaid invoice orders. Leave empty or 0 for no limit.', 'invoice-gateway-for-woocommerce' ),
+                'id'                => 'igfw_max_unpaid_invoices',
+                'css'               => 'width: 80px;',
+                'custom_attributes' => array(
+                    'min'  => 0,
+                    'step' => 1,
+                ),
+            ),
+
+            array(
+                'name'              => __( 'Minimum Order Amount', 'invoice-gateway-for-woocommerce' ),
+                'type'              => 'number',
+                'desc'              => __( 'Hide the invoice gateway when the cart total is below this amount. Leave empty for no minimum.', 'invoice-gateway-for-woocommerce' ),
+                'id'                => 'igfw_min_order_amount',
+                'css'               => 'width: 100px;',
+                'custom_attributes' => array(
+                    'min'  => 0,
+                    'step' => 'any',
+                ),
+            ),
+
+            array(
+                'name'              => __( 'Maximum Order Amount', 'invoice-gateway-for-woocommerce' ),
+                'type'              => 'number',
+                'desc'              => __( 'Hide the invoice gateway when the cart total is above this amount. Leave empty for no maximum.', 'invoice-gateway-for-woocommerce' ),
+                'id'                => 'igfw_max_order_amount',
+                'css'               => 'width: 100px;',
+                'custom_attributes' => array(
+                    'min'  => 0,
+                    'step' => 'any',
+                ),
+            ),
+
+            array(
+                'name'    => __( 'Allowed Roles', 'invoice-gateway-for-woocommerce' ),
+                'type'    => 'multiselect',
+                'class'   => 'wc-enhanced-select',
+                'css'     => 'min-width: 350px;',
+                'desc'    => __( 'Only these roles can use the invoice gateway. Guests are blocked when roles are selected. Leave empty to allow everyone.', 'invoice-gateway-for-woocommerce' ),
+                'id'      => 'igfw_allowed_roles',
+                'options' => $this->helper_functions->get_all_user_roles(),
+            ),
+
+            array(
+                'name' => __( 'Restriction Message', 'invoice-gateway-for-woocommerce' ),
+                'type' => 'textarea',
+                'desc' => __( 'Shown on the classic checkout when the invoice gateway is hidden by a rule above. Leave empty for the default message.', 'invoice-gateway-for-woocommerce' ),
+                'id'   => 'igfw_restriction_message',
+                'css'  => 'min-width: 350px; min-height: 60px;',
+            ),
+
+            array(
+                'type' => 'sectionend',
+                'id'   => 'igfw_restrictions_sectionend',
             ),
 
         );

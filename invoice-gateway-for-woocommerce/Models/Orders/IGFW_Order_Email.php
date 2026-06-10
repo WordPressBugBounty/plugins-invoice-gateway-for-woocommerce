@@ -200,6 +200,132 @@ class IGFW_Order_Email implements Model_Interface {
     }
 
     /**
+     * Append extra recipient(s) to the New Order email for invoice-gateway orders.
+     *
+     * Lets the merchant notify additional address(es) (e.g. a finance or shop
+     * manager) whenever an order is paid via the invoice gateway, without
+     * changing the global New Order recipient for every other order.
+     *
+     * @since 1.1.6
+     * @access public
+     *
+     * @param string    $recipient Comma-separated recipient list.
+     * @param \WC_Order $order     Order object, or null/non-order in the admin email-settings context.
+     * @return string Recipient list, with the configured extra address(es) appended (de-duplicated) when applicable.
+     */
+    public function add_recipients_to_new_order_email( $recipient, $order ) {
+
+        if ( ! $order instanceof \WC_Order || 'igfw_invoice_gateway' !== $order->get_payment_method() ) {
+            return $recipient;
+        }
+
+        $additional = get_option( 'igfw_additional_new_order_recipients', '' );
+
+        if ( '' === trim( (string) $additional ) ) {
+            return $recipient;
+        }
+
+        $emails = array_filter( array_map( 'trim', explode( ',', $additional ) ), 'is_email' );
+
+        if ( empty( $emails ) ) {
+            return $recipient;
+        }
+
+        // Merge with the current recipient list and drop duplicates so an address
+        // already on the New Order email isn't listed twice.
+        $existing = '' !== (string) $recipient ? array_map( 'trim', explode( ',', (string) $recipient ) ) : array();
+
+        return implode( ',', array_unique( array_merge( $existing, $emails ) ) );
+    }
+
+    /**
+     * Append the purchase order number to the New Order email subject.
+     *
+     * Only affects the admin New Order email (the sole consumer of the
+     * `woocommerce_email_subject_new_order` filter), and only when the order was
+     * paid via the invoice gateway, the PO field is enabled, and a PO number is
+     * present. In every other case the subject is returned unchanged.
+     *
+     * @since 1.1.6
+     * @access public
+     *
+     * @param string    $subject Formatted email subject.
+     * @param \WC_Order $order   Order object.
+     * @return string Email subject, with the PO number appended when available.
+     */
+    public function add_po_number_to_new_order_email_subject( $subject, $order ) {
+
+        if ( ! $order instanceof \WC_Order || 'igfw_invoice_gateway' !== $order->get_payment_method() ) {
+            return $subject;
+        }
+
+        if ( 'yes' !== get_option( 'igfw_enable_purchase_order_number' ) ) {
+            return $subject;
+        }
+
+        $po_number = $order->get_meta( Plugin_Constants::PURCHASE_ORDER_NUMBER, true );
+
+        if ( '' === $po_number ) {
+            return $subject;
+        }
+
+        $subject_format = apply_filters(
+            'igfw_purchase_order_number_email_subject_label',
+            // Translators: %1$s is the original email subject, %2$s is the purchase order number.
+            __( '%1$s — PO: %2$s', 'invoice-gateway-for-woocommerce' )
+        );
+
+        return sprintf( $subject_format, $subject, $po_number );
+    }
+
+    /**
+     * Render a Pay Now button on customer invoice/on-hold emails for payable invoice orders.
+     *
+     * Links to the native order-pay page (order-key gated) so the customer can
+     * settle the order with another enabled gateway. Rendered only when the Pay
+     * Now feature is on, the order is an invoice-gateway order that still needs
+     * payment, and at least one non-invoice gateway is enabled — see
+     * Helper_Functions::is_invoice_order_payable().
+     *
+     * @since 1.1.6
+     * @access public
+     *
+     * @param WC_Order $order         Order object.
+     * @param bool     $sent_to_admin Flag that determines if sent to admin or not.
+     * @param bool     $plain_text    Flag that determines if plain text email.
+     * @param WC_Email $email         Email object.
+     */
+    public function add_pay_now_button_to_customer_emails( $order, $sent_to_admin, $plain_text = false, $email = null ) {
+
+        if ( $sent_to_admin ) {
+            return;
+        }
+
+        if ( ! $email instanceof \WC_Email_Customer_Invoice && ! $email instanceof \WC_Email_Customer_On_Hold_Order ) {
+            return;
+        }
+
+        if ( ! Helper_Functions::is_invoice_order_payable( $order ) ) {
+            return;
+        }
+
+        $pay_url = $order->get_checkout_payment_url();
+        $label   = Helper_Functions::get_pay_now_button_label();
+
+        if ( $plain_text ) {
+            printf( "%s: %s\n\n", esc_html( wp_strip_all_tags( $label ) ), esc_url( $pay_url ) );
+            return;
+        }
+        ?>
+        <p style="margin: 0 0 24px; text-align: center;">
+            <a href="<?php echo esc_url( $pay_url ); ?>" style="display: inline-block; padding: 12px 28px; background-color: #7f54b3; border-radius: 4px; color: #ffffff; font-weight: 600; text-decoration: none;">
+                <?php echo esc_html( $label ); ?>
+            </a>
+        </p>
+        <?php
+    }
+
+    /**
      * Execute url coupon model.
      *
      * @inherit IGFW\Interfaces\Model_Interface
@@ -211,5 +337,8 @@ class IGFW_Order_Email implements Model_Interface {
 
         add_action( 'woocommerce_email_order_details', array( $this, 'add_invoice_note_to_admin_new_order_email' ), 9, 4 );
         add_filter( 'woocommerce_email_order_details', array( $this, 'add_paid_by_invoice_note_on_customer_completed_order_email' ), 9, 4 );
+        add_filter( 'woocommerce_email_recipient_new_order', array( $this, 'add_recipients_to_new_order_email' ), 10, 2 );
+        add_filter( 'woocommerce_email_subject_new_order', array( $this, 'add_po_number_to_new_order_email_subject' ), 10, 2 );
+        add_action( 'woocommerce_email_before_order_table', array( $this, 'add_pay_now_button_to_customer_emails' ), 10, 4 );
     }
 }

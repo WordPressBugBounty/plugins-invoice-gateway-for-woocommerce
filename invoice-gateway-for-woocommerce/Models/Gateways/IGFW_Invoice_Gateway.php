@@ -11,6 +11,7 @@
 namespace IGFW\Models\Gateways;
 
 use IGFW\Helpers\Plugin_Constants;
+use IGFW\Helpers\Helper_Functions;
 
 if ( ! defined( 'ABSPATH' ) ) {
     exit; // Exit if accessed directly.
@@ -77,6 +78,11 @@ class IGFW_Invoice_Gateway extends \WC_Payment_Gateway {
         // Force gateway to be available via direct hook.
         add_filter( 'woocommerce_available_payment_gateways', array( $this, 'add_to_gateways' ) );
 
+        // Pay Now: hide this gateway on the order-pay page of invoice orders. The
+        // matching payable-status filter is registered in IGFW_Order_CPT because
+        // gateways are lazily instantiated, too late for WC_Form_Handler::pay_action.
+        add_filter( 'woocommerce_available_payment_gateways', array( $this, 'hide_gateway_on_invoice_order_pay' ), 20 );
+
         do_action( 'igfw_invoice_gateway_construct' );
     }
 
@@ -90,6 +96,41 @@ class IGFW_Invoice_Gateway extends \WC_Payment_Gateway {
         if ( ! isset( $gateways[ $this->id ] ) && $this->is_available() ) {
             $gateways[ $this->id ] = $this;
         }
+        return $gateways;
+    }
+
+    /**
+     * Hide the invoice gateway on the order-pay page for invoice orders.
+     *
+     * An invoice order cannot sensibly be re-paid with the invoice gateway, so
+     * the customer must pick a real gateway there. Operates on the passed
+     * gateway list only (never re-queries availability — this runs inside that
+     * same filter) and leaves the gateway in place when it is the only one, to
+     * avoid an empty pay page.
+     *
+     * @since 1.1.6
+     * @access public
+     *
+     * @param array $gateways Available payment gateways.
+     * @return array Gateways without the invoice gateway where applicable.
+     */
+    public function hide_gateway_on_invoice_order_pay( $gateways ) {
+
+        if ( ! isset( $gateways[ $this->id ] ) || count( $gateways ) < 2 ) {
+            return $gateways;
+        }
+
+        if ( ! Helper_Functions::is_pay_now_enabled() || ! is_wc_endpoint_url( 'order-pay' ) ) {
+            return $gateways;
+        }
+
+        $order_id = absint( get_query_var( 'order-pay' ) );
+        $order    = $order_id ? wc_get_order( $order_id ) : false;
+
+        if ( $order instanceof \WC_Order && $this->id === $order->get_payment_method() ) {
+            unset( $gateways[ $this->id ] );
+        }
+
         return $gateways;
     }
 
@@ -167,12 +208,12 @@ class IGFW_Invoice_Gateway extends \WC_Payment_Gateway {
     public function payment_fields() {
 
         if ( get_option( 'igfw_enable_purchase_order_number' ) == 'yes' ) {
-            $po_number_title       = apply_filters( 'igfw_purchase_order_number_title', __( 'Purchase Order (optional)', 'invoice-gateway-for-woocommerce' ) );
+            $po_number_title       = Helper_Functions::get_purchase_order_number_title();
             $po_number_placeholder = apply_filters( 'igfw_purchase_order_number_placeholder', __( 'PO Number', 'invoice-gateway-for-woocommerce' ) );
             $po_number_desc        = apply_filters( 'igfw_purchase_order_number_desc', __( 'We will generate and send you an invoice for your order, if you have a PO number, please enter it.', 'invoice-gateway-for-woocommerce' ) );
             ?>
             <p><b><?php echo esc_html( $po_number_title ); ?></b></p>
-            <p><input type="text" name="igfw_purchase_order_number" placeholder="<?php echo esc_attr( $po_number_placeholder ); ?>"></p>
+            <p><input type="text" name="igfw_purchase_order_number" placeholder="<?php echo esc_attr( $po_number_placeholder ); ?>" aria-required="<?php echo esc_attr( Helper_Functions::is_purchase_order_number_required() ? 'true' : 'false' ); ?>"></p>
             <p><?php echo esc_html( $po_number_desc ); ?></p>
             <?php
         } else {
@@ -181,6 +222,37 @@ class IGFW_Invoice_Gateway extends \WC_Payment_Gateway {
                 echo wpautop(wptexturize(esc_attr($description))); // @codingStandardsIgnoreLine.
             }
         }
+    }
+
+    /**
+     * Validate the Purchase Order Number field on the classic checkout.
+     *
+     * WooCommerce calls this for the selected gateway during checkout validation
+     * (WC_Checkout::validate_checkout) and on the order-pay page. The Blocks
+     * checkout is validated separately in IGFW_Gateway_Blocks_Support.
+     *
+     * @since 1.1.6
+     * @access public
+     *
+     * @return bool True when valid, false to halt checkout.
+     */
+    public function validate_fields() {
+
+        if ( 'yes' !== get_option( 'igfw_enable_purchase_order_number', 'no' ) || ! Helper_Functions::is_purchase_order_number_required() ) {
+            return true;
+        }
+
+        // Nonce is verified upstream in WC_Checkout::process_checkout() before validate_fields() runs.
+        // phpcs:disable WordPress.Security.NonceVerification.Missing
+        $po_number = isset( $_POST['igfw_purchase_order_number'] ) ? sanitize_text_field( wp_unslash( $_POST['igfw_purchase_order_number'] ) ) : '';
+        // phpcs:enable WordPress.Security.NonceVerification.Missing
+
+        if ( '' === $po_number ) {
+            wc_add_notice( Helper_Functions::get_purchase_order_number_required_error(), 'error' );
+            return false;
+        }
+
+        return true;
     }
 
     /**

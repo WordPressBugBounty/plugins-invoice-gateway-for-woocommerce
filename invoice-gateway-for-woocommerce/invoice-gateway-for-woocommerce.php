@@ -3,13 +3,13 @@
  * Plugin Name: Invoice Gateway For WooCommerce
  * Plugin URI: https://rymera.com.au/
  * Description: Provides an invoice gateway for WooCommerce so your customers can check out without immediate payment.
- * Version: 1.1.5
+ * Version: 1.1.6
  * Author: Rymera Web Co
  * Author URI: https://rymera.com.au/
  * Requires at least: 5.0
- * Tested up to: 6.8
+ * Tested up to: 7.0
  * WC requires at least: 5.2
- * WC tested up to: 10.1
+ * WC tested up to: 10.8
  *
  * Text Domain: invoice-gateway-for-woocommerce
  * Domain Path: /languages/

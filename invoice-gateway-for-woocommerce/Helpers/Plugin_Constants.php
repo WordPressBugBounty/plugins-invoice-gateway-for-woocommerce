@@ -42,7 +42,7 @@ class Plugin_Constants {
     // Plugin configuration constants.
     const TOKEN               = 'igfw';
     const INSTALLED_VERSION   = 'igfw_installed_version';
-    const VERSION             = '1.1.5';
+    const VERSION             = '1.1.6';
     const TEXT_DOMAIN         = 'invoice-gateway-for-woocommerce';
     const THEME_TEMPLATE_PATH = 'invoice-gateway-for-woocommerce';
 
@@ -50,6 +50,10 @@ class Plugin_Constants {
     const INVOICE_NUMBER = '_igfw_invoice_number';
 
     const PURCHASE_ORDER_NUMBER = '_igfw_purchase_order_number';
+
+    const PAYMENT_DUE_DATE = '_igfw_payment_due_date';
+
+    const PAYMENT_REMINDER_SENT = '_igfw_payment_reminder_sent';
 
     // Settings Constants.
 

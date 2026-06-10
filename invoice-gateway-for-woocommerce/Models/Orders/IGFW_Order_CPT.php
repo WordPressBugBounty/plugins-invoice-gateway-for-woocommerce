@@ -327,6 +327,48 @@ class IGFW_Order_CPT implements Model_Interface {
     }
 
     /**
+     * Make invoice-gateway orders payable on the order-pay page.
+     *
+     * WooCommerce only treats pending/failed orders as payable by default. When
+     * the Pay Now feature is enabled, the configured default order status for
+     * invoice orders (e.g. on-hold) is appended so the customer can settle the
+     * order via another gateway. Scoped strictly to invoice-gateway orders.
+     *
+     * Registered in this model (plugin boot) rather than in the gateway
+     * constructor: gateways are lazily instantiated, and
+     * WC_Form_Handler::pay_action() calls WC_Order::needs_payment() before
+     * anything has loaded them on the pay POST.
+     *
+     * Must not call WC_Order::needs_payment() here — needs_payment() applies
+     * this same filter and would recurse.
+     *
+     * @since 1.1.6
+     * @access public
+     *
+     * @param string[]  $statuses Statuses WooCommerce treats as payable.
+     * @param \WC_Order $order    Order being checked.
+     * @return string[] Possibly-extended status list.
+     */
+    public function add_payable_status_for_invoice_orders( $statuses, $order ) {
+
+        if ( ! $order instanceof \WC_Order || 'igfw_invoice_gateway' !== $order->get_payment_method() ) {
+            return $statuses;
+        }
+
+        if ( ! Helper_Functions::is_pay_now_enabled() || ! Helper_Functions::has_non_invoice_gateway_enabled() ) {
+            return $statuses;
+        }
+
+        $payable_statuses = apply_filters(
+            'igfw_pay_now_payable_statuses',
+            array( get_option( 'igfw_default_order_status', 'on-hold' ) ),
+            $order
+        );
+
+        return array_unique( array_merge( (array) $statuses, (array) $payable_statuses ) );
+    }
+
+    /**
      * Execute url coupon model.
      *
      * @inherit IGFW\Interfaces\Model_Interface
@@ -346,6 +388,7 @@ class IGFW_Order_CPT implements Model_Interface {
         add_action( 'woocommerce_checkout_create_order', array( $this, 'maybe_save_purchase_number_number_on_checkout' ), 10, 2 );
 
         add_filter( 'woocommerce_cart_needs_payment', array( $this, 'show_invoice_payment_gateway_on_free_orders' ), 10, 2 );
+        add_filter( 'woocommerce_valid_order_statuses_for_payment', array( $this, 'add_payable_status_for_invoice_orders' ), 10, 2 );
     }
 
     /**

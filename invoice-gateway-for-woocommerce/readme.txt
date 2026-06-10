@@ -2,8 +2,8 @@
 Contributors: jkohlbach, RymeraWebCo, smub
 Tags: woocommerce invoice gateway, woocommerce payment gateway, woocommerce invoices, invoice gateway, woocommerce quotes
 Requires at least: 5.2
-Tested up to: 6.8
-Stable tag: 1.1.5
+Tested up to: 7.0
+Stable tag: 1.1.6
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -62,6 +62,15 @@ You can report security bugs through the Patchstack Vulnerability Disclosure Pro
 Coming Soon!
 
 == Changelog ==
+
+= 1.1.6 =
+- Feature: Send the New Order email to additional recipient(s) when invoice payment is selected.
+- Feature: Add a Pay Now button to invoice emails.
+- Feature: Set payment terms with a store admin overdue invoice notification.
+- Feature: Invoice payment gateway usage restrictions.
+- Improvement: Make Purchase Order Number required before checkout.
+- Improvement: Add the Purchase Order Number to the subject line of the New Order email.
+- Improvement: Validate additional New Order email recipients at save time.
 
 = 1.1.5 =
 - Bug Fix: Fatal Error: WooCommerce Payment Gateways Property Null in Invoice Gateway for Free Orders

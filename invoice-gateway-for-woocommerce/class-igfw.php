@@ -26,6 +26,8 @@ use IGFW\Models\Script_Loader;
 use IGFW\Models\Orders\IGFW_Order_CPT;
 use IGFW\Models\Orders\IGFW_Order_Email;
 use IGFW\Models\Blocks\IGFW_Gateway_Blocks_Support;
+use IGFW\Models\Payments\IGFW_Payment_Terms;
+use IGFW\Models\Restrictions\IGFW_Gateway_Restrictions;
 use IGFW\Models\WPAY_Pointer;
 /**
  * The main plugin class.
@@ -214,6 +216,8 @@ class IGFW extends Abstract_Main_Plugin_Class {
         IGFW_Order_CPT::get_instance( $this, $plugin_constants, $helper_functions );
         IGFW_Order_Email::get_instance( $this, $plugin_constants, $helper_functions );
         IGFW_Gateway_Blocks_Support::get_instance( $this, $plugin_constants );
+        IGFW_Payment_Terms::get_instance( $this, $plugin_constants, $helper_functions );
+        IGFW_Gateway_Restrictions::get_instance( $this, $plugin_constants, $helper_functions );
         Plugin_Installer::get_instance();
         WPAY_Pointer::get_instance( $this, $plugin_constants, $helper_functions );
     }

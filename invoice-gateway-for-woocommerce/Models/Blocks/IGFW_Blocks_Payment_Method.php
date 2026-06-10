@@ -10,6 +10,7 @@
 namespace IGFW\Models\Blocks;
 
 use Automattic\WooCommerce\Blocks\Payments\Integrations\AbstractPaymentMethodType;
+use IGFW\Helpers\Helper_Functions;
 
 /**
  * Invoice Gateway Blocks payment method
@@ -80,15 +81,17 @@ class IGFW_Blocks_Payment_Method extends AbstractPaymentMethodType {
      */
     public function get_payment_method_data() {
         return array(
-            'title'                          => isset( $this->settings['title'] ) ? $this->settings['title'] : __( 'Invoice Payment', 'invoice-gateway-for-woocommerce' ),
-            'description'                    => isset( $this->settings['description'] ) ? $this->settings['description'] : __( 'Pay with an invoice processed through our accounting system.', 'invoice-gateway-for-woocommerce' ),
-            'supports'                       => $this->get_supported_features(),
-            'enableForMethods'               => isset( $this->settings['enable_for_methods'] ) ? $this->settings['enable_for_methods'] : array(),
-            'enableForVirtual'               => isset( $this->settings['enable_for_virtual'] ) && 'yes' === $this->settings['enable_for_virtual'],
-            'enablePurchaseOrderNumber'      => 'yes' === get_option( 'igfw_enable_purchase_order_number', 'no' ),
-            'purchaseOrderNumberTitle'       => apply_filters( 'igfw_purchase_order_number_title', __( 'Purchase Order (optional)', 'invoice-gateway-for-woocommerce' ) ),
-            'purchaseOrderNumberPlaceholder' => apply_filters( 'igfw_purchase_order_number_placeholder', __( 'PO Number', 'invoice-gateway-for-woocommerce' ) ),
-            'purchaseOrderNumberDesc'        => apply_filters( 'igfw_purchase_order_number_desc', __( 'We will generate and send you an invoice for your order, if you have a PO number, please enter it.', 'invoice-gateway-for-woocommerce' ) ),
+            'title'                            => isset( $this->settings['title'] ) ? $this->settings['title'] : __( 'Invoice Payment', 'invoice-gateway-for-woocommerce' ),
+            'description'                      => isset( $this->settings['description'] ) ? $this->settings['description'] : __( 'Pay with an invoice processed through our accounting system.', 'invoice-gateway-for-woocommerce' ),
+            'supports'                         => $this->get_supported_features(),
+            'enableForMethods'                 => isset( $this->settings['enable_for_methods'] ) ? $this->settings['enable_for_methods'] : array(),
+            'enableForVirtual'                 => isset( $this->settings['enable_for_virtual'] ) && 'yes' === $this->settings['enable_for_virtual'],
+            'enablePurchaseOrderNumber'        => 'yes' === get_option( 'igfw_enable_purchase_order_number', 'no' ),
+            'requirePurchaseOrderNumber'       => Helper_Functions::is_purchase_order_number_required(),
+            'purchaseOrderNumberTitle'         => Helper_Functions::get_purchase_order_number_title(),
+            'purchaseOrderNumberPlaceholder'   => apply_filters( 'igfw_purchase_order_number_placeholder', __( 'PO Number', 'invoice-gateway-for-woocommerce' ) ),
+            'purchaseOrderNumberDesc'          => apply_filters( 'igfw_purchase_order_number_desc', __( 'We will generate and send you an invoice for your order, if you have a PO number, please enter it.', 'invoice-gateway-for-woocommerce' ) ),
+            'purchaseOrderNumberRequiredError' => Helper_Functions::get_purchase_order_number_required_error(),
         );
     }
 
